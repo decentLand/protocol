@@ -21,7 +21,7 @@ async function getWalletUniqueness() {
                                 {
                                     op: 'equals',
                                     expr1: 'App-Name',
-                                    expr2: 'w3gram'
+                                    expr2: 'decent.land'
                                 },
 
    
