@@ -4,6 +4,9 @@ const arweave = Arweave.init()
 let jwk;
 let pub_key;
 let username;
+let pfp;
+
+
 
 function readFile(input) {
   let file = input.files[0];
@@ -109,15 +112,24 @@ async function get_profile() {
      
      if (res["data"].length > 0 ) {
 
-     const last_registration_tx =  (res["data"][res["data"].length - 1])
+     // last_registration_tx as signup data to be applicable later on account metada update.
+     const last_registration_tx =  (res["data"][0])
+
      const tx_data = await arweave.transactions.getData(last_registration_tx, {decode: true, string: true});
      const usr_obj = JSON.parse(tx_data)
 
      username = usr_obj["username"];
+     pfp = usr_obj["pfp"];
+
      document.getElementById("username-holder").innerHTML = `You are going to post as <b>@${username}</b>`
+     document.getElementById("pfp").src = `https://arweave.net/${pfp}`;
      } else if (res["data"].length === 0) {
 
-        username = `guest_${pub_key.slice(0, 7)}`
+        username = `guest_${pub_key.slice(0, 7)}`;
+        // standard pfp for all guests
+        pfp = "78WdrVhNZ2i_KbimqcV4j-drX04HJr3E6UyD7xWc84Q";
+
+        document.getElementById('pfp').src = `https://arweave.net/${pfp}`;
         document.getElementById("username-holder").innerHTML = 
 
         `There is no username bound to your wallet.
@@ -151,35 +163,34 @@ async function post() {
         return
     }
 
-    const tx_obj = {
-        username: username,
-        userId: pub_key,
-        text: txt,
-        tribus_name: "open-square",
-        tribus_id: null,
-        unix_epoch: Date.now()
-    }
-
     let transaction = await arweave.createTransaction(
     {
+        data: txt
+    },
+    JSON.parse(jwk)
 
-        data: JSON.stringify(tx_obj)
-    }, JSON.parse(jwk)
+        );
 
-    );
+     transaction.addTag("App-Name", "PublicSquare");
+     transaction.addTag("Version", "1");
+     transaction.addTag("Type", "post");
+     transaction.addTag("Content-Type", "text/plain");
+     transaction.addTag("protocol", "decent.land");
+     transaction.addTag("v-protocol", "0.0.1");
+     transaction.addTag("tribus-name", "public-square");
+     transaction.addTag("tribus-id", null)
+     transaction.addTag("username", username);
+     transaction.addTag("user-id", pub_key);
+     transaction.addTag("pfp", pfp)
+     transaction.addTag("unix-epoch", Date.now());
 
-
-    transaction.addTag("App-Name", "decent.land");
-    transaction.addTag("version", "0.0.1");
-    transaction.addTag("action", "post")
-    transaction.addTag("Content-type", "application/json");
-    transaction.addTag("tribus-name", "open-square");
-    transaction.addTag("tribus-id", "None");
-    transaction.addTag("unix-epoch", tx_obj["unix_epoch"]);
-
-
-    await arweave.transactions.sign(transaction, JSON.parse(jwk))
+    await arweave.transactions.sign(transaction, JSON.parse(jwk));
     await arweave.transactions.post(transaction)
-    alert(`Your post ID: ${transaction.id}`)
 
-}
+
+    
+    alert(`Your post has been broadcasted.
+          
+           Post ID: ${transaction.id}`)
+
+};
