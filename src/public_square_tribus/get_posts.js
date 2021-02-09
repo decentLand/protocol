@@ -247,7 +247,7 @@ async function display_posts() {
 		
 		const key = tag.get('name', {decode: true, string: true});
 		const value = tag.get('value', {decode: true, string: true});
-		Object.defineProperty(post_obj, key, {value: value})
+		Object.defineProperty(post_obj, key, {value: value, configurable: true})
 
       	}
 
