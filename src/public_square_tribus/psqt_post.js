@@ -178,19 +178,20 @@ async function post() {
      transaction.addTag("protocol", "decent.land");
      transaction.addTag("v-protocol", "0.0.1");
      transaction.addTag("tribus-name", "public-square");
-     transaction.addTag("tribus-id", null)
+     transaction.addTag("tribus-id", null);
      transaction.addTag("username", username);
      transaction.addTag("user-id", pub_key);
-     transaction.addTag("pfp", pfp)
+     transaction.addTag("pfp", pfp);
+     transaction.addTag("Protocol", "SQUAD");
      transaction.addTag("unix-epoch", Date.now());
 
     await arweave.transactions.sign(transaction, JSON.parse(jwk));
-    await arweave.transactions.post(transaction)
+    await arweave.transactions.post(transaction);
 
 
     
     alert(`Your post has been broadcasted.
-          
-           Post ID: ${transaction.id}`)
+          Please wait few minutes and it will be displayed.
+           Post ID: ${transaction.id}`);
 
 };
