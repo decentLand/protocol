@@ -146,12 +146,12 @@ async function display_posts() {
 
                     	expr2:
                     	{
-                    		op: 'and',
+                    		op: 'or',
                     		expr1: 
                     		{
                     			op: 'equals',
                     			expr1: 'Type',
-                    			expr2: 'post'
+                    			expr2: 'Post'
 
                     		},
                     		expr2:
@@ -160,8 +160,8 @@ async function display_posts() {
                     			expr1:
                     			{
                     				op: 'equals',
-                    				expr1: 'Version',
-                    				expr2: '1'
+                    				expr1: 'Type',
+                    				expr2: 'post'
                     			},
 
                     			expr2:
@@ -195,9 +195,25 @@ async function display_posts() {
                     						},
                     						expr2:
                     						{
-                    							op: 'equals',
-                    							expr1: 'v-protocol',
-                    							expr2: '0.0.1'
+                    							op: 'and',
+                    							expr1:
+                    							{
+                    								op: 'equals',
+                    								expr1: 'Version',
+                    								expr2: '1'
+                    							},
+                    							expr2:
+                    							{
+                    						
+                    						
+                    							
+                    									op: 'equals',
+                    									expr1: 'v-protocol',
+                    									expr2: '0.0.1'
+                    								},
+                    								
+                    							
+                    							
                     						}
                     					}
                     				}
