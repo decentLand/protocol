@@ -270,7 +270,7 @@ async function get_tribuses() {
 
 
     const res = await arweave.api.post(`arql`, tribus_list)
-    console.log(res["data"])
+
 
     return res["data"]
 }
@@ -338,8 +338,10 @@ async function get_tribus_obj() {
 async function whatTribus(input) {
     const t_name = input.value;
 
-    const visibility = tribuses_objj?.[t_name]?.["visibility"]
-    const entry = tribuses_objj?.[t_name]?.["entry"]
+    // const visibility = tribuses_objj?.[t_name]?.["visibility"]
+    const visibility = tribuses_objj[t_name] ? tribuses_objj[t_name]["visibility"] : undefined
+    // const entry = tribuses_objj?.[t_name]?.["entry"]
+    const entry = tribuses_objj[t_name] ? tribuses_objj[t_name]["entry"] : undefined
 
     if (visibility && entry) {
         document.getElementById("tribus-info").innerHTML = 
@@ -361,8 +363,13 @@ async function isStaker(t_id, membership) {
     const community_xyz = "https://cache.community.xyz/contract/"
     const res = await fetch(`${community_xyz}${t_id}`)
     const psc_data = await res.json()
+    
+        const vault = psc_data["vault"][pub_key] ?
+                  psc_data["vault"][pub_key][0]["balance"] :
+                  undefined
 
-    return psc_data["vault"]?.[pub_key]?.[0]?.["balance"] > Number(membership)
+//     return psc_data["vault"]?.[pub_key]?.[0]?.["balance"] > Number(membership)
+       return vault > Number(membership)
 }
 
 async function get_ticker(t_name) {
