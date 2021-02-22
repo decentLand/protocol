@@ -2,7 +2,7 @@ let jwk;
 let pub_key;
 const arweave = Arweave.init();
 let tribus;
-document.getElementById("post").addEventListener("click", function(){post()})
+
 
 async function pkToPub(jwk){
     const arweave = Arweave.init()
@@ -117,12 +117,14 @@ async function createTribus() {
 
     transaction.addTag("App-Name", "decent.land");
     transaction.addTag("action", "createTribus");
-    transaction.addTag("version", "9.0.1");
-    transaction.addTag("tribus name", tribus_name_modified)
-    transaction.addTag("tribus id", tribus_id)
+    transaction.addTag("version", "mainnet");
+    transaction.addTag("tribus-name", tribus_name_modified)
+    transaction.addTag("tribus-id", tribus_id)
+    transaction.addTag("visibility", post_visibility)
+    transaction.addTag("entry", membership_entry)
     transaction.addTag("Content-Type", "application/json");
     transaction.addTag("creator", username);
-    transaction.addTag("creator id", pub_key)
+    transaction.addTag("creator-id", pub_key)
     transaction.addTag("unix-epoch", Date.now())
 
 
@@ -236,173 +238,4 @@ async function get_profile(pub_key) {
 };
 
 
- //  
- // 
- // posting
- // 
- // 
- // 
-
- async function get_profile() {
-
-    
-
-
-    let get_applicant_wallet =
-            {
-                op: 'and',
-                expr1:
-                    {
-                        op: 'equals',
-                        expr1: 'user-id',
-                        expr2: pub_key,
-                    },
-                
-                expr2:
-                    {
-                      op: 'and',
-                        expr1: 
-                                {
-                                    op: 'equals',
-                                    expr1: 'App-Name',
-                                    expr2: 'decent.land'
-                                },
-
-   
-                        expr2:
-                            {
-                            op: 'and',
-                              expr1:
-                                
-                                    {
-                                        op:'equals',
-                                        expr1: 'version',
-                                        expr2: '0.0.1',
-                                    },
-                                
-                                expr2:
-                                    
-                                    {
-                                        op: 'and',
-                                            expr1:
-
-                                            {
-                                                op:'equals',
-                                                expr1: 'action',
-                                                expr2: 'signup'
-                                            },
-
-                                            expr2:
-                                                
-                                                {
-                                                    op: 'and',
-                                                        expr1:
-
-                                                        {
-                                                            op: 'equals',
-                                                            expr1: 'Content-Type',
-                                                            expr2: 'application/json',
-                                                        },
-
-                                                        expr2:
-                                                        
-                                                        {
-                                                            op: 'equals',
-                                                            expr1: 'from',
-                                                            expr2: pub_key,
-                                                        },
-                                                },
-                                    },
-
-                            },
-                    },
-
-            }
-                    
-     
-     const res = await arweave.api.post('arql', get_applicant_wallet)
-     
-     if (res["data"].length > 0 ) {
-
-     // last_registration_tx as signup data to be applicable later on account metada update.
-     const last_registration_tx =  (res["data"][0])
-
-     const tx_data = await arweave.transactions.getData(last_registration_tx, {decode: true, string: true});
-     const usr_obj = JSON.parse(tx_data)
-
-     username = usr_obj["username"];
-     pfp = usr_obj["pfp"];
-
-     document.getElementById("username-holder").innerHTML = `You are going to post as <b>@${username}</b>`
-     document.getElementById("pfp").src = `https://arweave.net/${pfp}`;
-     } else if (res["data"].length === 0) {
-
-        username = `guest_${pub_key.slice(0, 7)}`;
-        // standard pfp for all guests
-        pfp = "78WdrVhNZ2i_KbimqcV4j-drX04HJr3E6UyD7xWc84Q";
-
-        document.getElementById('pfp').src = `https://arweave.net/${pfp}`;
-        document.getElementById("username-holder").innerHTML = 
-
-        `There is no username bound to your wallet.
-        <br>
-        You are going to post as <b>@${username}</b>`
-
-     }
-     
-}
-
-
-
-
-async function post() {
  
-     
-    const md = window.markdownit()
-                // prevent XSS attacks
-               .set({'html': false}); 
-    const arweave = Arweave.init()
-
-    const txt = document.getElementById("post-text").value
-   
-    if (txt.length === 0) {
-        alert("You can't post with empty text")
-        return
-    }
-
-    if (typeof jwk === "undefined") {
-        alert("please import your wallet")
-        return
-    }
-
-    let transaction2 = await arweave.createTransaction(
-    {
-        data: txt
-    },
-    JSON.parse(jwk)
-
-        );
-
-     transaction2.addTag("App-Name", "decent.land");
-     transaction2.addTag("version", "9.0.1");
-     transaction2.addTag("action", "post");
-     transaction2.addTag("Content-Type", "text/plain");
-
-     transaction2.addTag("tribus-id", tribus_id)
-     transaction2.addTag("username", username);
-     transaction2.addTag("user-id", pub_key);
-     transaction2.addTag("pfp", pfp)
-     transactio2.addTag("Protocol", "SQUAD");
-     transaction2.addTag("Type", "Post");
-     transaction2.addTag("unix-epoch", Date.now());
-
-    await arweave.transactions.sign(transaction, JSON.parse(jwk));
-    await arweave.transactions.post(transaction)
-
-
-    
-    alert(`Your post has been broadcasted.
-          
-           Post ID: ${transaction.id}`)
-
-};
