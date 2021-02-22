@@ -261,7 +261,7 @@ async function get_tribuses() {
             expr2: {
                 op: 'equals',
                 expr1: 'version',
-                expr2: 'testnet'
+                expr2: 'mainnet'
             }
             }
         }
