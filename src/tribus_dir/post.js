@@ -174,10 +174,10 @@ async function post() {
 
 
 
-    const xxx = (document.getElementById("tribus-list").value)
+    const TRIBUS_NAME = (document.getElementById("tribus-list").value)
    
     
-    if (xxx == "public-square") {
+    if (TRIBUS_NAME == "public-square") {
 
      transaction.addTag("App-Name", "PublicSquareTest");
      transaction.addTag("Version", "1");
@@ -195,14 +195,14 @@ async function post() {
 
     } else  {
 
-        if (await isHolder(tribuses_objj[xxx]["tribus-id"], tribuses_objj[xxx]["visibility"] ) 
-            && await isStaker(tribuses_objj[xxx]["tribus-id"], tribuses_objj[xxx]["entry"])) {
+        if (await isHolder(tribuses_objj[TRIBUS_NAME]["tribus-id"], tribuses_objj[TRIBUS_NAME]["visibility"] ) 
+            && await isStaker(tribuses_objj[TRIBUS_NAME]["tribus-id"], tribuses_objj[TRIBUS_NAME]["entry"])) {
 
             transaction.addTag("App-Name", "decent.landTest");
             transaction.addTag("version", "9.0.1");
             transaction.addTag("action", "post");
             transaction.addTag("Content-Type", "text/plain");
-            transaction.addTag("tribus-id", tribuses_objj[xxx]["tribus-id"])
+            transaction.addTag("tribus-id", tribuses_objj[TRIBUS_NAME]["tribus-id"])
             transaction.addTag("tribus-name", document.getElementById("tribus-list").value)
             transaction.addTag("username", username);
             transaction.addTag("user-id", pub_key);
