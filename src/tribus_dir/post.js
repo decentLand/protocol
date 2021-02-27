@@ -179,9 +179,13 @@ async function post() {
     
     if (TRIBUS_NAME == "public-square") {
 
-     transaction.addTag("App-Name", "PublicSquareTest");
+     transaction.addTag("App-Name", "PublicSquare");
+     transaction.addTag("App-Name", "SmartWeaveContract");
      transaction.addTag("Version", "1");
      transaction.addTag("Type", "post");
+     transaction.addTag("App-Version", "0.3.0");
+     transaction.addTag("Contract-Src", "19KJrsgGk61wOrThQSwrVjsVhdXRIyFOogPGKMJ5YAo");
+     transaction.addTag("Init-State", `{"owner":"${pub_key}","name":"${username}'s post","ticker":"DL-NFT","description":"decent.land post - PublicSquare"`);
      transaction.addTag("Content-Type", "text/plain");
      transaction.addTag("protocol", "decent.land");
      transaction.addTag("v-protocol", "0.0.1");
@@ -190,7 +194,7 @@ async function post() {
      transaction.addTag("username", username);
      transaction.addTag("user-id", pub_key);
      transaction.addTag("pfp", pfp);
-     transaction.addTag("Protocol", "TESTSQUAD");
+     transaction.addTag("Protocol", "SQUAD");
      transaction.addTag("unix-epoch", Date.now());
 
     } else  {
@@ -198,9 +202,13 @@ async function post() {
         if (await isHolder(tribuses_objj[TRIBUS_NAME]["tribus-id"], tribuses_objj[TRIBUS_NAME]["visibility"] ) 
             && await isStaker(tribuses_objj[TRIBUS_NAME]["tribus-id"], tribuses_objj[TRIBUS_NAME]["entry"])) {
 
-            transaction.addTag("App-Name", "decent.landTest");
-            transaction.addTag("version", "9.0.1");
+            transaction.addTag("App-Name", "decent.land");
+            transaction.addTag("App-Name", "SmartWeaveContract");
+            transaction.addTag("version", "0.0.1");
             transaction.addTag("action", "post");
+            transaction.addTag("App-Version", "0.3.0");
+            transaction.addTag("Contract-Src", "19KJrsgGk61wOrThQSwrVjsVhdXRIyFOogPGKMJ5YAo");
+            transaction.addTag("Init-State", `{"owner":"${pub_key}","name":"${username}'s post","ticker":"DL-NFT","description":"decent.land post- ${document.getElementById("tribus-list").value}"`)
             transaction.addTag("Content-Type", "text/plain");
             transaction.addTag("tribus-id", tribuses_objj[TRIBUS_NAME]["tribus-id"])
             transaction.addTag("tribus-name", document.getElementById("tribus-list").value)
