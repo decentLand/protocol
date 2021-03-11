@@ -115,7 +115,7 @@ async function get_tribus_obj() {
     
       <div style="display:inline-block;">
       <h3>${tx_obj["tribus-name"]}</h3>
-    <p><b>Tribus ID:</b> <a href='https://community.xyz/#${tx_obj["tribus-id"]}'>${tx_obj["tribus-id"]}</a></p>
+    <p><b>Tribus ID:</b> <a href='https://arweave.net/7skTfMpgS-SZ6cOa6Bs7T3KNDqoSg80awIgypFX0hz0/#${tx_obj["tribus-id"]}'>${tx_obj["tribus-id"]}</a></p>
     <p><b>membership entry:</b> ${tx_obj["entry"]} | <b>post visibility:</b> ${tx_obj["visibility"]}  <b>${await get_ticker(tx_obj["tribus-id"])}</b></p>
       </div>
     
