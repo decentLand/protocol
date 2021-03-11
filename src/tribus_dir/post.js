@@ -368,16 +368,24 @@ async function isHolder(t_id, visibility) {
 }
 
 async function isStaker(t_id, membership) {
+    let locked_balance = 0;
     const community_xyz = "https://cache.community.xyz/contract/"
     const res = await fetch(`${community_xyz}${t_id}`)
     const psc_data = await res.json()
     
-        const vault = psc_data["vault"][pub_key] ?
-                  psc_data["vault"][pub_key][0]["balance"] :
-                  undefined
+    const vault = psc_data["vault"][pub_key]
+
+    if (vault) {
+        for (item of vault) {
+            locked_balance += item["balance"]
+            console.log(`locked balance = ${locked_balance}`)
+        }
+    }
+                  // psc_data["vault"][pub_key][0]["balance"] :
+                  // undefined
 
 //     return psc_data["vault"]?.[pub_key]?.[0]?.["balance"] > Number(membership)
-       return vault > Number(membership)
+       return locked_balance > Number(membership)
 }
 
 async function get_ticker(t_name) {
@@ -386,5 +394,6 @@ async function get_ticker(t_name) {
     const psc_data = await res.json()
     return psc_data["ticker"]
 }
+
 
 get_tribus_obj()
