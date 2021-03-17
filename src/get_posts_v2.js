@@ -123,7 +123,7 @@ async function get_profile(address) {
 
 
 
-async function display_posts({id, name, app}) {
+async function display_posts({id, name, visibility, app}) {
 
 
     let get_ps_posts =
@@ -266,6 +266,21 @@ async function display_posts({id, name, app}) {
 		
 		const key = tag.get('name', {decode: true, string: true});
 		const value = tag.get('value', {decode: true, string: true});
+		
+	 // check held PST per address for post visibilty
+        if (key == 'user-id') {
+            let address = value;
+         
+            if ( ! await isHolder(address, id, visibility) ) {
+
+                post_obj["post_text"] =   `the user has decided to hide his posts`;
+                post_obj["post_id"] = `hidden`;
+
+            }
+
+        }
+
+       // // //
 		Object.defineProperty(post_obj, key, {value: value, configurable: true})
 
       	}
@@ -407,7 +422,7 @@ async function get_tribus_obj() {
             const value = tag.get("value", {decode: true, string: true})
            
 
-            if (key == 'tribus-id' || key == 'tribus-name' ) {
+            if (key == 'tribus-id' || key == 'tribus-name' || key == "visibility") {
 
                 Object.defineProperty(tx_obj, key, {value: value})
 
@@ -419,6 +434,7 @@ async function get_tribus_obj() {
 
                         "tribus_name": tx_obj["tribus-name"], 
                         "tribus_id" : tx_obj["tribus-id"],
+			"visibility": tx_obj["visibility"]
                         
                         }
 
@@ -432,7 +448,7 @@ async function get_tribus_obj() {
     const communities = new Map()
 
     tribuslist.forEach(tribus => {
-        communities.set(tribus["tribus_id"], tribus["tribus_name"])
+        communities.set(tribus["tribus_id"], `${tribus["tribus_name"]};${tribus['visibility']}`)
     })
 
 
@@ -443,7 +459,8 @@ async function get_tribus_obj() {
     
             display_posts({
                     id: hash,
-                    name: communities.get(hash),
+                    name: (communities.get(hash)).split(';')[0],
+		    visibility: (communities.get(hash)).split(';')[1],
                     app : 'decent.land'
                 })
             
@@ -468,4 +485,12 @@ async function get_tribus_obj() {
 
 }
 
+
+async function isHolder(address, t_id, visibility) {
+    const community_xyz = "https://cache.community.xyz/contract/"
+    const res = await fetch(`${community_xyz}${t_id}`)
+    const psc_data = await res.json()
+
+    return psc_data["balances"][address] > Number(visibility);
+}
 get_tribus_obj()
