@@ -184,8 +184,9 @@ async function post() {
      transaction.addTag("Version", "1");
      transaction.addTag("Type", "post");
      transaction.addTag("App-Version", "0.3.0");
-     transaction.addTag("Contract-Src", "19KJrsgGk61wOrThQSwrVjsVhdXRIyFOogPGKMJ5YAo");
-     transaction.addTag("Init-State", `{"owner":"${pub_key}","name":"${username}'s post","ticker":"DL-NFT","description":"decent.land post - PublicSquare"`);
+//      atomic NFt post initialization
+     transaction.addTag("Contract-Src", "I8xgq3361qpR8_DvqcGpkCYAUTMktyAgvkm6kGhJzEQ");
+     transaction.addTag("Init-State", `{"owner":"${pub_key}","name":"${username}'s post","ticker":"DL-NFT-${username}-${Date.now()}","description":"decent.land post - PublicSquare", "balances": {"${pub_key}": 1}`)
      transaction.addTag("Content-Type", "text/plain");
      transaction.addTag("protocol", "decent.land");
      transaction.addTag("v-protocol", "0.0.1");
@@ -194,7 +195,11 @@ async function post() {
      transaction.addTag("username", username);
      transaction.addTag("user-id", pub_key);
      transaction.addTag("pfp", pfp);
+//       PublicSquare posts are also under $QUAD protocol by github.com/t8 
      transaction.addTag("Protocol", "SQUAD");
+//       listing the NFT in Verto marketplace
+     transaction.addTag("Action", "marketplace/Create");
+     transaction.addTag("Exchange", "Verto");
      transaction.addTag("unix-epoch", Date.now());
 
     } else  {
@@ -207,14 +212,16 @@ async function post() {
             transaction.addTag("version", "0.0.1");
             transaction.addTag("action", "post");
             transaction.addTag("App-Version", "0.3.0");
-            transaction.addTag("Contract-Src", "19KJrsgGk61wOrThQSwrVjsVhdXRIyFOogPGKMJ5YAo");
-            transaction.addTag("Init-State", `{"owner":"${pub_key}","name":"${username}'s post","ticker":"DL-NFT","description":"decent.land post- ${document.getElementById("tribus-list").value}"`)
+            transaction.addTag("Contract-Src", "I8xgq3361qpR8_DvqcGpkCYAUTMktyAgvkm6kGhJzEQ");
+            transaction.addTag("Init-State", `{"owner":"${pub_key}","name":"${username}'s post","ticker":"DL-NFT-${username}-${Date.now()}","description":"decent.land post - ${document.getElementById("tribus-list").value}", "balances": {"${pub_key}": 1}`)
             transaction.addTag("Content-Type", "text/plain");
             transaction.addTag("tribus-id", tribuses_objj[TRIBUS_NAME]["tribus-id"])
             transaction.addTag("tribus-name", document.getElementById("tribus-list").value)
             transaction.addTag("username", username);
             transaction.addTag("user-id", pub_key);
             transaction.addTag("pfp", pfp);
+            transaction.addTag("Action", "marketplace/Create");
+            transaction.addTag("Exchange", "Verto");
             transaction.addTag("unix-epoch", Date.now());
 
 
@@ -364,7 +371,7 @@ async function isHolder(t_id, visibility) {
     const community_xyz = "https://cache.community.xyz/contract/"
     const res = await fetch(`${community_xyz}${t_id}`)
     const psc_data = await res.json()
-    return psc_data["balances"][pub_key] > Number(visibility);
+    return psc_data["balances"][pub_key] >= Number(visibility);
 }
 
 async function isStaker(t_id, membership) {
@@ -385,7 +392,7 @@ async function isStaker(t_id, membership) {
                   // undefined
 
 //     return psc_data["vault"]?.[pub_key]?.[0]?.["balance"] > Number(membership)
-       return locked_balance > Number(membership)
+       return locked_balance >= Number(membership)
 }
 
 async function get_ticker(t_name) {
