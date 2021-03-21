@@ -96,9 +96,9 @@ async function get_profile(address) {
      const bio = usr_obj["bio"];
   
      return {
-     	username,
-     	pfp,
-     	bio
+        username,
+        pfp,
+        bio
      };
 
 
@@ -110,9 +110,9 @@ async function get_profile(address) {
         const bio = "a random arweaver"
      
         return {
-        	username,
-        	pfp,
-        	bio
+            username,
+            pfp,
+            bio
         };
 
    
@@ -124,6 +124,7 @@ async function get_profile(address) {
 
 
 async function display_posts({id, name, visibility, app}) {
+    console.log(id, name, visibility, app)
 
 
     let get_ps_posts =
@@ -138,93 +139,93 @@ async function display_posts({id, name, visibility, app}) {
 
                     expr2:
                     {
-                    	op: 'and',
-                    	expr1:
-                    	{
-                    		op: 'equals',
-                    		expr1: 'Content-Type',
-                    		expr2: 'text/plain'
-                    	},
+                        op: 'and',
+                        expr1:
+                        {
+                            op: 'equals',
+                            expr1: 'Content-Type',
+                            expr2: 'text/plain'
+                        },
 
-                    	expr2:
-                    	{
-                    		op: 'or',
-                    		expr1: 
-                    		{
-                    			op: 'equals',
-                    			expr1: 'action',
-                    			expr2: 'post'
+                        expr2:
+                        {
+                            op: 'or',
+                            expr1: 
+                            {
+                                op: 'equals',
+                                expr1: 'action',
+                                expr2: 'post'
 
-                    		},
-                    		expr2:
-                    		{
-                    			op: 'and',
-                    			expr1:
-                    			{
-                    				op: 'equals',
-                    				expr1: 'Type',
-                    				expr2: 'post'
-                    			},
+                            },
+                            expr2:
+                            {
+                                op: 'and',
+                                expr1:
+                                {
+                                    op: 'equals',
+                                    expr1: 'Type',
+                                    expr2: 'post'
+                                },
 
-                    			expr2:
-                    			{
-                    				op: 'and',
-                    				expr1:
-                    				{
-                    					op: 'equals',
-                    					expr1: 'protocol',
-                    					expr2: 'decent.land',
-                    				},
+                                expr2:
+                                {
+                                    op: 'and',
+                                    expr1:
+                                    {
+                                        op: 'equals',
+                                        expr1: 'protocol',
+                                        expr2: 'decent.land',
+                                    },
 
-                    				expr2:
-                    				{
-                    					op: 'and',
-                    					expr1:
-                    					{
-                    						op: 'equals',
-                    						expr1: 'tribus-id',
-                    						expr2: id
-                    					},
+                                    expr2:
+                                    {
+                                        op: 'and',
+                                        expr1:
+                                        {
+                                            op: 'equals',
+                                            expr1: 'tribus-id',
+                                            expr2: id
+                                        },
 
-                    					expr2:
-                    					{
-                    						op: 'and',
-                    						expr1:
-                    						{
-                    							op: 'equals',
-                    							expr1: 'tribus-name',
-                    							expr2: name,
-                    						},
-                    						expr2:
-                    						{
-                    							op: 'and',
-                    							expr1:
-                    							{
-                    								op: 'equals',
-                    								expr1: 'Version',
-                    								expr2: '1'
-                    							},
-                    							expr2:
-                    							{
-                    						
-                    						
-                    							
-                    									op: 'equals',
-                    									expr1: 'v-protocol',
-                    									expr2: '0.0.1'
-                    								},
-                    								
-                    							
-                    							
-                    						}
-                    					}
-                    				}
-                    				
-                    			}
+                                        expr2:
+                                        {
+                                            op: 'and',
+                                            expr1:
+                                            {
+                                                op: 'equals',
+                                                expr1: 'tribus-name',
+                                                expr2: name,
+                                            },
+                                            expr2:
+                                            {
+                                                op: 'and',
+                                                expr1:
+                                                {
+                                                    op: 'equals',
+                                                    expr1: 'Version',
+                                                    expr2: '1'
+                                                },
+                                                expr2:
+                                                {
+                                            
+                                            
+                                                
+                                                        op: 'equals',
+                                                        expr1: 'v-protocol',
+                                                        expr2: '0.0.1'
+                                                    },
+                                                    
+                                                
+                                                
+                                            }
+                                        }
+                                    }
+                                    
+                                }
 
-                    		}
-                    		
-                    	}
+                            }
+                            
+                        }
                     }
             };
 
@@ -235,71 +236,74 @@ async function display_posts({id, name, visibility, app}) {
     const res = await arweave.api.post('arql', get_ps_posts)
     const posts_list = res["data"]
     document.getElementById("tribusName").innerHTML = `tribus: ${name}`
-    console.log(posts_list)
-
+    document.head.innerHTML += `<meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Tribus forum: ${name}">
+    <meta name="twitter:image" content="https://arweave.net/RUaij2IDIpPVjhfcb4LnW8RIClr_gFTzwxovFfPoXxg">`
+    // console.log(posts_list)
 
 
 
     for (post of posts_list) {
-    	// 
-    	const post_obj = {};
+        // 
+        const post_obj = {};
 
-    	let  status = await arweave.transactions.getStatus(post)
-    	status = status["status"]
+        let  status = await arweave.transactions.getStatus(post)
+        status = status["status"]
 
-    	
-    	// load confirmed transactions only
-    	if (status != 200) {post = undefined};
+        
+        // load confirmed transactions only
+        if (status != 200) {post = undefined};
     
 
-    	if (post != undefined) {
+        if (post != undefined) {
 
-    	const tx  = await arweave.transactions.get(post)
-    	const tags = await tx.get('tags')
-    	const post_text = ( await arweave.transactions.getData(post, {decode: true, string: true}) );
-    	
-    	post_obj["post_text"] = post_text;
-    	post_obj["post_id"] = post;
+        const tx  = await arweave.transactions.get(post)
+        const tags = await tx.get('tags')
+        const post_text = ( await arweave.transactions.getData(post, {decode: true, string: true}) );
+        
+        post_obj["post_text"] = post_text;
+        post_obj["post_id"] = post;
 
 
-    	for (tag of tags) {
-		
-		const key = tag.get('name', {decode: true, string: true});
-		const value = tag.get('value', {decode: true, string: true});
-		
-	 // check held PST per address for post visibilty
+        for (tag of tags) {
+        
+        const key = tag.get('name', {decode: true, string: true});
+        const value = tag.get('value', {decode: true, string: true});
+     
+        // check held PST per address for post visibilty
         if (key == 'user-id') {
             let address = value;
          
             if ( ! await isHolder(address, id, visibility) ) {
 
-                post_obj["post_text"] =   `the user has decided to hide his posts`;
+                post_obj["post_text"] =   `the user has decided to hide this posts`;
                 post_obj["post_id"] = `hidden`;
 
             }
 
         }
-
+        
        // // //
-		Object.defineProperty(post_obj, key, {value: value, configurable: true})
 
-      	}
+        Object.defineProperty(post_obj, key, {value: value, configurable: true})
 
-      	// last_* are profile's metadata: retrieved from the last signup tx
-      	const last_profile_data = await get_profile(post_obj["user-id"])
-      	const last_username = last_profile_data["username"]
-      	const last_pfp_url = `https://arweave.net/${last_profile_data["pfp"]}`
- 		
- 		post_obj["last_username"] = last_username;
- 		post_obj["last_pfp_url"] = last_pfp_url;
- 		
-      	
+        }
+
+        // last_* are profile's metadata: retrieved from the last signup tx
+        const last_profile_data = await get_profile(post_obj["user-id"])
+        const last_username = last_profile_data["username"]
+        const last_pfp_url = `https://arweave.net/${last_profile_data["pfp"]}`
+        
+        post_obj["last_username"] = last_username;
+        post_obj["last_pfp_url"] = last_pfp_url;
+        
+        
 
  
 
-    	posts.push(post_obj)
-    	
-    	}
+        posts.push(post_obj)
+        
+        }
 
     };
 
@@ -422,7 +426,7 @@ async function get_tribus_obj() {
             const value = tag.get("value", {decode: true, string: true})
            
 
-            if (key == 'tribus-id' || key == 'tribus-name' || key == "visibility") {
+            if (key == 'tribus-id' || key == 'tribus-name' || key == "visibility" ) {
 
                 Object.defineProperty(tx_obj, key, {value: value})
 
@@ -434,7 +438,7 @@ async function get_tribus_obj() {
 
                         "tribus_name": tx_obj["tribus-name"], 
                         "tribus_id" : tx_obj["tribus-id"],
-			"visibility": tx_obj["visibility"]
+                        "visibility": tx_obj["visibility"]
                         
                         }
 
@@ -451,7 +455,7 @@ async function get_tribus_obj() {
         communities.set(tribus["tribus_id"], `${tribus["tribus_name"]};${tribus['visibility']}`)
     })
 
-
+    console.log(communities)
     if (hash) {
 
         if (communities.has(hash))
@@ -460,7 +464,7 @@ async function get_tribus_obj() {
             display_posts({
                     id: hash,
                     name: (communities.get(hash)).split(';')[0],
-		    visibility: (communities.get(hash)).split(';')[1],
+                    visibility: (communities.get(hash)).split(';')[1],
                     app : 'decent.land'
                 })
             
@@ -485,12 +489,13 @@ async function get_tribus_obj() {
 
 }
 
-
 async function isHolder(address, t_id, visibility) {
     const community_xyz = "https://cache.community.xyz/contract/"
     const res = await fetch(`${community_xyz}${t_id}`)
     const psc_data = await res.json()
 
-    return psc_data["balances"][address] > Number(visibility);
+    return psc_data["balances"][address] >= Number(visibility);
 }
+
 get_tribus_obj()
+
