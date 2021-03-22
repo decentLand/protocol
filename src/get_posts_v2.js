@@ -1,5 +1,5 @@
 const arweave = Arweave.init()
-
+const readState = smarweave.readContract
 const posts = [];
 let tribuslist = []
 let tribuses_map = new Map()
@@ -489,13 +489,21 @@ async function get_tribus_obj() {
 
 }
 
-async function isHolder(address, t_id, visibility) {
-    const community_xyz = "https://cache.community.xyz/contract/"
-    const res = await fetch(`${community_xyz}${t_id}`)
-    const psc_data = await res.json()
+// async function isHolder(address, t_id, visibility) {
+//     const community_xyz = "https://cache.community.xyz/contract/"
+//     const res = await fetch(`${community_xyz}${t_id}`)
+//     const psc_data = await res.json()
 
-    return psc_data["balances"][address] >= Number(visibility);
+//     return psc_data["balances"][address] >= Number(visibility);
+// }
+
+async function isHolder(address, t_id, visibility) {
+
+    const data = await readState(arweave, t_id);
+
+    return data["balances"][address] >= visibility
 }
+
 
 get_tribus_obj()
 
