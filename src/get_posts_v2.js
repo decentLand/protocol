@@ -271,7 +271,11 @@ async function display_posts({id, name, visibility, app}) {
         const value = tag.get('value', {decode: true, string: true});
      
         // check held PST per address for post visibilty
-        if (key == 'user-id') {
+        // for any Tribus excluding PublicSquare         
+
+        if ( id != 'null') {
+
+            if (key == 'user-id') {
             let address = value;
          
             if ( ! await isHolder(address, id, visibility) ) {
@@ -280,6 +284,8 @@ async function display_posts({id, name, visibility, app}) {
                 post_obj["post_id"] = `hidden`;
 
             }
+
+        }
 
         }
         
