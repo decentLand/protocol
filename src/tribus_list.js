@@ -4,6 +4,7 @@
 
 
 const arweave = Arweave.init();
+const readState = smartweave.readContract;
 const tribuses_map = new Map();
 // const tribuses_objj = {};
 const tribuslist = []
@@ -127,31 +128,51 @@ async function get_tribus_obj() {
     
   
 }
+// get_ticker(t_id) & get_logo(t_id) are deprecated
+// async function get_ticker(t_id) {
+//     const community_xyz = "https://cache.community.xyz/contract/"
+//     const res = await fetch(`${community_xyz}${t_id}`)
+//     const psc_data = await res.json()
+//     return psc_data["ticker"]
+// }
+
+// async function get_logo(t_id) {
+
+//     const community_xyz = "https://cache.community.xyz/contract/"
+//     const res = await fetch(`${community_xyz}${t_id}`)
+//     const psc_data = await res.json()
+//     let logo = psc_data["settings"][5][1]
+
+//     if (logo) {
+//       return logo
+//     } else {
+// //       custom logo
+//       return 'RUaij2IDIpPVjhfcb4LnW8RIClr_gFTzwxovFfPoXxg'
+//     }
+
+// }
 
 async function get_ticker(t_id) {
-    const community_xyz = "https://cache.community.xyz/contract/"
-    const res = await fetch(`${community_xyz}${t_id}`)
-    const psc_data = await res.json()
-    return psc_data["ticker"]
-}
+
+  const data = await readState(arweave, t_id);
+  const ticker = data["ticker"];
+
+  return ticker
+};
 
 async function get_logo(t_id) {
 
-    const community_xyz = "https://cache.community.xyz/contract/"
-    const res = await fetch(`${community_xyz}${t_id}`)
-    const psc_data = await res.json()
-    let logo = psc_data["settings"][5][1]
+  const data = await readState(arweave, t_id);
+  console.log(data)
+  const logo_id = data["settings"][5][1];
 
-    if (logo) {
-      return logo
-    } else {
-//       custom logo
-      return 'RUaij2IDIpPVjhfcb4LnW8RIClr_gFTzwxovFfPoXxg'
-    }
+  if (!logo_id) {
+    return 'RUaij2IDIpPVjhfcb4LnW8RIClr_gFTzwxovFfPoXxg'
+  };
 
-}
+  return logo_id
 
-
+};
 // remove Tribus containers when #href != 'list'
 window.addEventListener('hashchange', () => {
   console.log('hash changed')
