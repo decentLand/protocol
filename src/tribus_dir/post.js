@@ -1,6 +1,7 @@
 document.getElementById("post").addEventListener("click", function(){post()})
 
 const arweave = Arweave.init();
+const readState = smartweave.readContract
 let tribuses_objj = {}
 let jwk;
 let pub_key;
@@ -367,40 +368,57 @@ async function whatTribus(input) {
     }
 };
 
-async function isHolder(t_id, visibility) {
-    const community_xyz = "https://cache.community.xyz/contract/"
-    const res = await fetch(`${community_xyz}${t_id}`)
-    const psc_data = await res.json()
-    return psc_data["balances"][pub_key] >= Number(visibility);
+async function isHolder(t_id, visibility) { 
+
+    const data = await readState(arweave, String(t_id));
+    console.log(data["balances"][pub_key])
+    return data["balances"][pub_key] >= visibility
 }
+
+// async function isStaker(t_id, membership) {
+//     let locked_balance = 0;
+//     const community_xyz = "https://cache.community.xyz/contract/"
+//     const res = await fetch(`${community_xyz}${t_id}`)
+//     const psc_data = await res.json()
+    
+//     const vault = psc_data["vault"][pub_key]
+
+//     if (vault) {
+//         for (item of vault) {
+//             locked_balance += item["balance"]
+//             console.log(`locked balance = ${locked_balance}`)
+//         }
+//     }
+                 
+
+
+//        return locked_balance >= Number(membership)
+// }
 
 async function isStaker(t_id, membership) {
     let locked_balance = 0;
-    const community_xyz = "https://cache.community.xyz/contract/"
-    const res = await fetch(`${community_xyz}${t_id}`)
-    const psc_data = await res.json()
-    
-    const vault = psc_data["vault"][pub_key]
+    console.log(`tid`, t_id)
+    const data = await readState(arweave, t_id);
+    // pub_key is retrieved from the lexical scope
+    const address_existence = data["vault"][pub_key];
 
-    if (vault) {
-        for (item of vault) {
-            locked_balance += item["balance"]
+    if (address_existence) {
+        for (balance of address_existence) {
+            locked_balance += balance
             console.log(`locked balance = ${locked_balance}`)
         }
-    }
-                  // psc_data["vault"][pub_key][0]["balance"] :
-                  // undefined
 
-//     return psc_data["vault"]?.[pub_key]?.[0]?.["balance"] > Number(membership)
-       return locked_balance >= Number(membership)
-}
+    }
+
+    return locked_balance >= Number(membership)
+};
 
 async function get_ticker(t_name) {
-    const community_xyz = "https://cache.community.xyz/contract/"
-    const res = await fetch(`${community_xyz}${tribuses_objj[t_name]["tribus-id"]}`)
-    const psc_data = await res.json()
-    return psc_data["ticker"]
-}
+  const t_id = tribuses_objj[t_name]["tribus-id"]
+  const data = await readState(arweave, t_id);
+  const ticker = data["ticker"];
 
+  return ticker
+};
 
 get_tribus_obj()
