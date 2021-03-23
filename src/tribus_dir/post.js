@@ -404,7 +404,7 @@ async function isStaker(t_id, membership) {
 
     if (address_existence) {
         for (balance of address_existence) {
-            locked_balance += balance
+            locked_balance += balance["balance"]
             console.log(`locked balance = ${locked_balance}`)
         }
 
