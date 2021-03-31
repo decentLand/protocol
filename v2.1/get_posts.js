@@ -1,90 +1,19 @@
 const arweave = Arweave.init({
-    host: 'arweave.net'
-})
-const readState = smartweave.readContract
-const Arverify = arverify.getVerification
+    host: 'arweave.net',
+    port: 1984,
+    protocol: 'http'
+});
+
+const readState = smartweave.readContract;
+const Arverify = arverify.getVerification;
 const posts = [];
-let tribuslist = []
-let tribuses_map = new Map()
+let tribuslist = [];
+let tribuses_map = new Map();
+
+
 
 async function get_profile(address) {
 
-    
-
-
-    // let get_applicant_wallet =
-    //         {
-    //             op: 'and',
-    //             expr1:
-    //                 {
-    //                     op: 'equals',
-    //                     expr1: 'user-id',
-    //                     expr2: address,
-    //                 },
-                
-    //             expr2:
-    //                 {
-    //                   op: 'and',
-    //                     expr1: 
-    //                             {
-    //                                 op: 'equals',
-    //                                 expr1: 'App-Name',
-    //                                 expr2: 'decent.land'
-    //                             },
-
-   
-    //                     expr2:
-    //                         {
-    //                         op: 'and',
-    //                           expr1:
-                                
-    //                                 {
-    //                                     op:'equals',
-    //                                     expr1: 'version',
-    //                                     expr2: '0.0.1',
-    //                                 },
-                                
-    //                             expr2:
-                                    
-    //                                 {
-    //                                     op: 'and',
-    //                                         expr1:
-
-    //                                         {
-    //                                             op:'equals',
-    //                                             expr1: 'action',
-    //                                             expr2: 'signup'
-    //                                         },
-
-    //                                         expr2:
-                                                
-    //                                             {
-    //                                                 op: 'and',
-    //                                                     expr1:
-
-    //                                                     {
-    //                                                         op: 'equals',
-    //                                                         expr1: 'Content-Type',
-    //                                                         expr2: 'application/json',
-    //                                                     },
-
-    //                                                     expr2:
-                                                        
-    //                                                     {
-    //                                                         op: 'equals',
-    //                                                         expr1: 'from',
-    //                                                         expr2: address,
-    //                                                     },
-    //                                             },
-    //                                 },
-
-    //                         },
-    //                 },
-
-    //         }
-                    
-     
-     // const res = await arweave.api.post('arql', get_applicant_wallet)
      const res = await getUserProfile(address)
      
      if (res.length > 0 ) {
@@ -129,125 +58,9 @@ async function get_profile(address) {
 
 
 async function display_posts({id, name, visibility, app}) {
-    console.log(id, name, visibility, app)
 
-
-    // let get_ps_posts =
-    //         {
-    //             op: 'and',
-    //             expr1:
-    //                 {
-    //                   op: 'equals',
-    //                   expr1: 'App-Name',
-    //                   expr2: app
-    //                 },
-
-    //                 expr2:
-    //                 {
-    //                     op: 'and',
-    //                     expr1:
-    //                     {
-    //                         op: 'equals',
-    //                         expr1: 'Content-Type',
-    //                         expr2: 'text/plain'
-    //                     },
-
-    //                     expr2:
-    //                     {
-    //                         op: 'or',
-    //                         expr1: 
-    //                         {
-    //                             op: 'equals',
-    //                             expr1: 'action',
-    //                             expr2: 'post'
-
-    //                         },
-    //                         expr2:
-    //                         {
-    //                             op: 'and',
-    //                             expr1:
-    //                             {
-    //                                 op: 'equals',
-    //                                 expr1: 'Type',
-    //                                 expr2: 'post'
-    //                             },
-
-    //                             expr2:
-    //                             {
-    //                                 op: 'and',
-    //                                 expr1:
-    //                                 {
-    //                                     op: 'equals',
-    //                                     expr1: 'protocol',
-    //                                     expr2: 'decent.land',
-    //                                 },
-
-    //                                 expr2:
-    //                                 {
-    //                                     op: 'and',
-    //                                     expr1:
-    //                                     {
-    //                                         op: 'equals',
-    //                                         expr1: 'tribus-id',
-    //                                         expr2: id
-    //                                     },
-
-    //                                     expr2:
-    //                                     {
-    //                                         op: 'and',
-    //                                         expr1:
-    //                                         {
-    //                                             op: 'equals',
-    //                                             expr1: 'tribus-name',
-    //                                             expr2: name,
-    //                                         },
-    //                                         expr2:
-    //                                         {
-    //                                             op: 'and',
-    //                                             expr1:
-    //                                             {
-    //                                                 op: 'equals',
-    //                                                 expr1: 'Version',
-    //                                                 expr2: '1'
-    //                                             },
-    //                                             expr2:
-    //                                             {
-                                            
-                                            
-                                                
-    //                                                     op: 'equals',
-    //                                                     expr1: 'v-protocol',
-    //                                                     expr2: '0.0.1'
-    //                                                 },
-                                                    
-                                                
-                                                
-    //                                         }
-    //                                     }
-    //                                 }
-                                    
-    //                             }
-
-    //                         }
-                            
-    //                     }
-    //                 }
-    //         };
-
-
-
-                
-
-    // const res = await arweave.api.post('arql', get_ps_posts)
-    // const posts_list = res["data"]
     const posts_list = await getPostsTxs(app, id, name)
-    console.log(posts_list)
-    document.getElementById("tribusName").innerHTML = `Tribus: ${name}`
-    // document.head.innerHTML += `<meta name="twitter:card" content="summary">
-    // <meta name="twitter:title" content="Tribus forum: ${name}">
-    // <meta name="twitter:image" content="https://arweave.net/RUaij2IDIpPVjhfcb4LnW8RIClr_gFTzwxovFfPoXxg">`
-    
-
+    document.getElementById("tribusName").innerHTML = `Tribus: ${name}`;
 
 
     for (post of posts_list) {
@@ -370,54 +183,6 @@ body {
 
 
 
-
-
-
-
-
-
-// async function get_tribuses() {
-
-//     // let tribus_list = {
-//     //     op: 'and',
-//     //     expr1: {
-//     //         op: 'equals',
-//     //         expr1: 'action',
-//     //         expr2: 'createTribus'
-//     //     },
-
-//     //     expr2: {
-//     //         op: 'and',
-//     //         expr1: {
-//     //             op: 'equals',
-//     //             expr1: 'App-Name',
-//     //             expr2: 'decent.land'
-//     //         },
-
-//     //         expr2: {
-//     //             op: 'and',
-//     //             expr1: {
-//     //             op: 'equals',
-//     //             expr1: 'Content-Type',
-//     //             expr2: 'application/json'
-//     //         },
-
-//     //         expr2: {
-//     //             op: 'equals',
-//     //             expr1: 'version',
-//     //             expr2: 'mainnet'
-//     //         }
-//     //         }
-//     //     }
-//     // }
-
-
-
-//     // const res = await arweave.api.post(`arql`, tribus_list)
-//     // return res["data"]
-// }
-
-
 async function filter_owners() {
     const tribuses_list = await getCreatedTribusList();
     console.log(tribuses_list)
@@ -436,11 +201,13 @@ async function filter_owners() {
     const tribuses_obj = Object.fromEntries(tribuses_map.entries())
     console.log(Object.values(tribuses_obj))
     return Object.values(tribuses_obj)
-}
+};
 
 async function get_tribus_obj() {
+    const url_hash = window.location.hash.substring(1);
 
-    if (! window.location.hash.substring(1)) {
+    if (! url_hash) {
+
         display_posts({
                     id: 'null',
                     name: 'public-square',
@@ -448,7 +215,9 @@ async function get_tribus_obj() {
                 })
 
         return
-    }
+    };
+
+    // retrieve corresponding Tribus data
     const tribusTxs = await filter_owners();
     const tribuses = {};
 
@@ -458,6 +227,7 @@ async function get_tribus_obj() {
         const tx_data = await arweave.transactions.get(tx)
         const tags = await tx_data.get('tags')
         const tx_obj = {}
+
         for (tag of tags) {
             const key = tag.get("name", {decode: true, string: true})
             const value = tag.get("value", {decode: true, string: true})
@@ -468,10 +238,10 @@ async function get_tribus_obj() {
                 Object.defineProperty(tx_obj, key, {value: value})
 
             }
-        }
+        };
 
   
-        tribuslist.push({
+        tribuslist.push( {
 
                         "tribus_name": tx_obj["tribus-name"], 
                         "tribus_id" : tx_obj["tribus-id"],
@@ -479,23 +249,22 @@ async function get_tribus_obj() {
                         
                         }
 
-                        )
+                            );
 
         
         
-    }
+    };
 
-    const hash = window.location.hash.substring(1);
     const communities = new Map()
 
     tribuslist.forEach(tribus => {
         communities.set(tribus["tribus_id"], `${tribus["tribus_name"]};${tribus['visibility']}`)
-    })
+    });
 
-    console.log(communities)
-    if (hash) {
 
-        if (communities.has(hash))
+    if (url_hash) {
+
+        if ( communities.has(url_hash) )
             {
     
             display_posts({
@@ -503,7 +272,7 @@ async function get_tribus_obj() {
                     name: (communities.get(hash)).split(';')[0],
                     visibility: (communities.get(hash)).split(';')[1],
                     app : 'decent.land'
-                })
+                });
             
 
             } else {
@@ -511,20 +280,8 @@ async function get_tribus_obj() {
                 return
             }
 
-        } else {
-            console.log('reached')
-
-            display_posts({
-                    id: 'null',
-                    name: 'public-square',
-                    app : 'PublicSquare'
-                })
-        
-    }
-
-    
-
-}
+        } 
+};
 
 
 
@@ -536,13 +293,13 @@ async function isHolder(address, t_id, visibility) {
     return data["balances"][address] >= visibility
 }
 
-
+// blue checkmark is given for Arverified addresses
 async function isArverified(address) {
     const verificationObj = await Arverify(address)
 
     return verificationObj.verified
 
-}
+};
 
 
 
@@ -599,7 +356,7 @@ async function getPostsTxs(app, id, name) {
         data_arr.push(tx_id[0])
     }
 
-    return(data_arr)
+    return data_arr
 };
 
 
@@ -649,8 +406,8 @@ async function getCreatedTribusList() {
         data_arr.push(tx_id[0])
     }
 
-    return(data_arr)
-}
+    return data_arr
+};
 
 
 
@@ -683,6 +440,7 @@ async function getUserProfile(address) {
 }
 `,
     };
+
     const response = await fetch("https://arweave.net/graphql", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -690,7 +448,7 @@ async function getUserProfile(address) {
     });
 
     const json = await response.json();
-    console.log(json)
+
     const data_arr = [];
 
     const res_arr = json["data"]["transactions"]["edges"];
@@ -701,9 +459,8 @@ async function getUserProfile(address) {
         data_arr.push(tx_id[0])
     }
 
-    return(data_arr)
-}
-
+    return data_arr
+};
 
 
  get_tribus_obj()
