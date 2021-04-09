@@ -1,7 +1,6 @@
 const arweave = Arweave.init({
     host: 'arweave.net',
-    port: 1984,
-    protocol: 'http'
+    protocol: 'https'
 });
 
 const readState = smartweave.readContract;
@@ -10,11 +9,22 @@ const posts = [];
 let tribuslist = [];
 let tribuses_map = new Map();
 
+async function getNetwork() {
+    const network_obj = await arweave.network.getInfo();
+    const version = network_obj["network"];
+    const height = network_obj["height"];
+    const peers = network_obj["peers"];
+
+    document.getElementById("network").innerHTML = 
+    `network: ${version} | height: ${height} | peers: ${peers}`
+}
+
+getNetwork()
 
 
 async function get_profile(address) {
 
-     const res = await getUserProfile(address)
+     const res = await getUserProfile(address);
      
      if (res.length > 0 ) {
 
@@ -60,12 +70,68 @@ async function get_profile(address) {
 async function display_posts({id, name, visibility, app}) {
 
     const posts_list = await getPostsTxs(app, id, name)
-    document.getElementById("tribusName").innerHTML = `Tribus: ${name}`;
+    const cache_data = await getCacheData()
+    const cache = new Map(Object.entries(JSON.parse(cache_data)))
 
+    document.getElementById("tribusName").innerHTML = `Tribus: ${name}`;
+    
 
     for (post of posts_list) {
-        // 
-        const post_obj = {};
+        if (cache.has(post)) {
+            const data = cache.get(post);
+            const usernameAndCheckmark = await isArverified(data["user-id"]) ?
+        `<div class="user-fullname">${data["username"] }  <div class="check"></div></div>` :
+        `<div class="user-fullname">${data["username"]}</div>`
+
+        document.getElementById("content").innerHTML += 
+
+        `<div class="tweet">
+          <div class="user">
+            <img src="https://arweave.net/${data["pfp"]}" alt="pfp" class="user-avatar">
+          ${usernameAndCheckmark}
+        <div class="user-username">${data["user-id"]} </div>
+          </div>
+        <div class="tweet-text">
+            ${data["text"]}
+        </div>
+        <time class="tweet-time">
+            post id: ${post}
+        </time>
+
+        <style>
+
+        :root {
+  --borderWidth: 3.5px;
+  --height: 12px;
+  --width: 6px;
+  --borderColor: blue;
+}
+
+body {
+  padding: 1px;
+
+}
+
+.check {
+  display: inline-block;
+  transform: rotate(45deg);
+  height: var(--height);
+  width: var(--width);
+  border-bottom: var(--borderWidth) solid var(--borderColor);
+  border-right: var(--borderWidth) solid var(--borderColor);
+}
+
+</style>
+   
+        </div>`
+
+
+
+
+
+        } else {
+
+            const post_obj = {};
 
         let  status = await arweave.transactions.getStatus(post)
         status = status["status"]
@@ -177,7 +243,14 @@ body {
         
         }
 
-    };
+    
+        }
+    }
+    
+
+
+    
+        
     
 }
 
@@ -268,9 +341,9 @@ async function get_tribus_obj() {
             {
     
             display_posts({
-                    id: hash,
-                    name: (communities.get(hash)).split(';')[0],
-                    visibility: (communities.get(hash)).split(';')[1],
+                    id: url_hash,
+                    name: (communities.get(url_hash)).split(';')[0],
+                    visibility: (communities.get(url_hash)).split(';')[1],
                     app : 'decent.land'
                 });
             
@@ -462,5 +535,50 @@ async function getUserProfile(address) {
     return data_arr
 };
 
+// 
+// 
+// 
+// 
+// 
+// 
+
+// async function getCacheData() {
+//     const archiver_addr = "rB86LBc5uSm68ZGh5v2sdiM-8r4uFOZ35VZwBvnesqo"
+//     const last_tx = await arweave.wallets.getLastTransactionID(archiver_addr)
+//     console.log(last_tx)
+//     const last_cache_data = await arweave.transactions.getData(last_tx, {decode: true, string: true});
+
+//     const cache_object = JSON.parse(last_cache_data);
+//     const cache = new Map( Object.entries(cache_object) );
+
+//     return cache
+
+    
+// };
+
+async function getCacheData() {
+    const archiver_addr = "rB86LBc5uSm68ZGh5v2sdiM-8r4uFOZ35VZwBvnesqo"
+    const last_tx = await arweave.wallets.getLastTransactionID(archiver_addr)
+
+    const last_cache_data = await arweave.transactions.getData(last_tx, {decode: true, string: true});
+
+    const cache_object = JSON.parse(last_cache_data);
+    const cache = new Map( Object.entries(cache_object) );
+
+
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+        if ( cache.has(hash) ) {
+            const data =  cache.get(hash)
+            return await arweave.transactions.getData(data, {decode: true, string: true})
+        }
+    } else {
+        const data =  cache.get("null");
+        return await arweave.transactions.getData(data, {decode: true, string: true})
+    }
+
+    
+};
 
  get_tribus_obj()
+
