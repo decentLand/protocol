@@ -123,7 +123,13 @@ async function profileHistory(address) {
         return profile_his[0];
 
         } else {
-            return []
+            return {
+                username : `guest_${address.slice(0, 7)}`,
+                pfp: "78WdrVhNZ2i_KbimqcV4j-drX04HJr3E6UyD7xWc84Q",
+                bio: " a random Arweaver"
+                user_id : address
+
+                }
             }
 
     };
