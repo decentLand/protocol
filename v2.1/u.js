@@ -42,10 +42,9 @@ function timestampToDate(unix){
 };
 
 
-async function parseProfileData(address){
+async function parseProfileData(address) {
 
     const profileObject = await profileHistory(address)
-
 
     u_username.innerHTML = `@${profileObject["username"]}`
     u_bio.innerHTML = `<i>" ${profileObject["bio"]} "</i>`;
@@ -55,6 +54,8 @@ async function parseProfileData(address){
     u_joinedAt.innerHTML = (timestampToDate(profileObject["registration_unix_epoch"]))
     u_posts.innerHTML = `~ ${ await postsCount(userAddress) }`;
     u_balance.innerHTML = (await balanceOf(userAddress));
+//     display user's posts (PublicSquare posts only)
+    await parsePosts(userAddress)
     
 };
 
@@ -199,12 +200,74 @@ async function getCacheData() {
     const cache = new Map( Object.entries(cache_object) );
     const data =  cache.get("null");
 
-    
     return await arweave.transactions.getData(data, {decode: true, string: true})
-    
-
-    
 };
+
+async function getPspostsOf(address) {
+
+    const publicSquarePosts = await getCacheData();
+    const dataObj = JSON.parse(publicSquarePosts);
+    const postsArr = (Object.values(dataObj))
+    const data = postsArr.filter(post => post["user-id"] == address)
+
+    return data
+};
+
+async function parsePosts(address) {
+    const posts = await getPspostsOf(address);
+
+    for (let post of posts) {
+
+        const usernameAndCheckmark = await isArverified(post["user-id"]) ?
+        `<div class="user-fullname">${post["username"] }  <div class="check"></div></div>` :
+        `<div class="user-fullname">${post["username"]}</div>`;
+
+
+        u_postsObj.innerHTML += 
+            `<div class="tweet">
+          <div class="user">
+            <img src="https://arweave.net/${post["pfp"]}" alt="pfp" class="user-avatar">
+            ${usernameAndCheckmark}
+            <div class="user-username">${post["user-id"]} </div>
+          </div>
+        <div class="tweet-text">
+            ${post["text"]}
+        </div>
+        <time class="tweet-time">
+            posted on: ${timestampToDate(parseInt(post["unix-epoch"]))}
+        </time>
+
+        <style>
+
+        :root {
+  --borderWidth: 3.5px;
+  --height: 12px;
+  --width: 6px;
+  --borderColor: blue;
+}
+
+body {
+  padding: 1px;
+
+}
+
+.check {
+  display: inline-block;
+  transform: rotate(45deg);
+  height: var(--height);
+  width: var(--width);
+  border-bottom: var(--borderWidth) solid var(--borderColor);
+  border-right: var(--borderWidth) solid var(--borderColor);
+}
+
+</style>
+   
+        </div>`
+
+    }
+
+
+}
 
 
 parseProfileData(userAddress)
