@@ -11,7 +11,8 @@ const arweave = Arweave.init({
 
 });
 
-const readState = smartweave.readContract
+const readState = smartweave.readContract;
+const Arverify = arverify.getVerification;
 
 
 const userAddress = window.location.hash.substring(1);
@@ -57,10 +58,6 @@ async function parseProfileData(address){
 
 
 async function profileHistory(address) {
-
-    if (typeof address !== "string") {
-        throw new TypeError("Please provide wallet's address as string");
-    };
 
     const queryObject = {
       query: 
@@ -181,6 +178,14 @@ async function balanceOf(address) {
     const balance = expected_balance ? expected_balance : 0
 
     return balance
-}
+};
+
+async function isArverified(address) {
+    
+    const verificationObj = await Arverify(address)
+    return verificationObj.verified
+
+};
+
 
 parseProfileData(userAddress)
