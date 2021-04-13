@@ -23,6 +23,7 @@ const u_pfp = document.getElementById("pfp");
 const u_joinedAt = document.getElementById("joined");
 const u_posts = document.getElementById("posts_count");
 const u_balance = document.getElementById("balance");
+const u_postsObj = document.getElementById("posts");
 
 const monthList = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -42,9 +43,9 @@ function timestampToDate(unix){
 
 
 async function parseProfileData(address){
-    console.log(u_username)
+
     const profileObject = await profileHistory(address)
-    console.log(profileObject)
+
 
     u_username.innerHTML = `@${profileObject["username"]}`
     u_bio.innerHTML = `<i>" ${profileObject["bio"]} "</i>`;
@@ -53,7 +54,8 @@ async function parseProfileData(address){
     u_pfp.src = `https://arweave.net/${profileObject["pfp"]}`;
     u_joinedAt.innerHTML = (timestampToDate(profileObject["registration_unix_epoch"]))
     u_posts.innerHTML = `~ ${ await postsCount(userAddress) }`;
-    u_balance.innerHTML = (await balanceOf(userAddress))
+    u_balance.innerHTML = (await balanceOf(userAddress));
+    
 };
 
 
@@ -123,7 +125,7 @@ async function profileHistory(address) {
             return {
                 username : `guest_${address.slice(0, 7)}`,
                 pfp: "78WdrVhNZ2i_KbimqcV4j-drX04HJr3E6UyD7xWc84Q",
-                bio: " a random Arweaver"
+                bio: " a random Arweaver",
                 user_id : address
 
                 }
