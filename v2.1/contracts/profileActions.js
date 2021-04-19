@@ -1,6 +1,6 @@
 const DECENTLAND_SWC = "sew_MAXZIgmyEPzzOTkdAca7SQCL9XTCMfxY3KOE5-M"
 const DECENTLAND_USER = "vZY2XY1RD9HIfWi8ift-1_DnHLDadZMWrufSh-_rKF0"
-const MIN_DLT_AMOUNT = 0 
+
 
 export async function handle(state, action) {
 
@@ -16,8 +16,8 @@ export async function handle(state, action) {
       throw new ContractError(`${actionOn} is an invalid Arweave address`)
     }
 
-    if ( decentlandState["balances"][caller] < MIN_DLT_AMOUNT ) {
-      throw new ContractError(`You need to have a balance greater or equal to ${MIN_DLT_AMOUNT} DLT`)
+    if ( ! decentlandState["balances"][caller] ) {
+      throw new ContractError(`You need to have a balance greater than zero of DLT token`)
     }
 
     if ( actionOn === caller ) {
@@ -62,8 +62,8 @@ export async function handle(state, action) {
       throw new ContractError(`${actionOn} is an invalid Arweave address`)
     }
 
-    if ( decentlandState["balances"][caller] < MIN_DLT_AMOUNT ) {
-      throw new ContractError(`You need to have a balance greater or equal to ${MIN_DLT_AMOUNT} DLT`)
+    if ( ! decentlandState["balances"][caller] ) {
+      throw new ContractError(`You need to have a balance greater than zero of DLT token`)
     }
 
     if ( actionOn === caller ) {
