@@ -75,16 +75,16 @@ export async function handle(state, action) {
     }
 
     if ( ! (users[caller]["followings"]).includes(actionOn) ) {
-      throw new ContractError(`${actionOn} not found in ${caller} followers list`)
+      throw new ContractError(`${actionOn} not found in ${caller} followings list`)
     }
 
-    const indexOfActionOn = (users[caller]["followings"]).indexOf(actionOn)
+    const indexOfActionOn = users[caller]["followings"].indexOf(actionOn)
     // remove the actionOn wallet address from caller's following list
-    (users[caller]["followings"]).splice(indexOfActionOn, 1)
+    users[caller]["followings"].splice(indexOfActionOn, 1)
 
-    const indexOfCaller = (users[actionOn]["followers"]).indexOf(caller)
+    const indexOfCaller = users[actionOn]["followers"].indexOf(caller)
     // remove caller's wallet address from actionOn followers list
-    (users[actionOn]["followers"]).splice(indexOfCaller, 1)
+    users[actionOn]["followers"].splice(indexOfCaller, 1)
 
     return { state }
   }
