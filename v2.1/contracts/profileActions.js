@@ -34,7 +34,9 @@ export async function handle(state, action) {
         } else {
           users[actionOn] = {
             "followings": [DECENTLAND_USER],
-            "followers": [caller]
+            "followers": [caller],
+            "block_list": [],
+            "friendzone": {}
           }
         }
       }
@@ -42,13 +44,17 @@ export async function handle(state, action) {
       if ( ! users[actionOn] ) {
         users[actionOn] = {
           "followings": [DECENTLAND_USER],
-          "followers": [caller]
+          "followers": [caller],
+          "block_list": [],
+          "friendzone": {}
         }
       }
 
       users[caller] = {
         "followings": [DECENTLAND_USER, actionOn],
-        "followers": []
+        "followers": [],
+        "block_list": [],
+        "friendzone": {}
       }
 
     }
