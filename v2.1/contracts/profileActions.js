@@ -1,5 +1,5 @@
 const DECENTLAND_SWC = "sew_MAXZIgmyEPzzOTkdAca7SQCL9XTCMfxY3KOE5-M"
-const DECENTLAND_USER = "vZY2XY1RD9HIfWi8ift-1_DnHLDadZMWrufSh-_rKF0"
+
 
 
 export async function handle(state, action) {
@@ -33,7 +33,7 @@ export async function handle(state, action) {
           (users[actionOn]["followers"]).push(caller)
         } else {
           users[actionOn] = {
-            "followings": [DECENTLAND_USER],
+            "followings": [],
             "followers": [caller],
             "block_list": [],
             "friendzone": {}
@@ -43,7 +43,7 @@ export async function handle(state, action) {
     } else {
       if ( ! users[actionOn] ) {
         users[actionOn] = {
-          "followings": [DECENTLAND_USER],
+          "followings": [],
           "followers": [caller],
           "block_list": [],
           "friendzone": {}
@@ -51,7 +51,7 @@ export async function handle(state, action) {
       }
 
       users[caller] = {
-        "followings": [DECENTLAND_USER, actionOn],
+        "followings": [actionOn],
         "followers": [],
         "block_list": [],
         "friendzone": {}
