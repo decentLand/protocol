@@ -150,4 +150,42 @@ export async function handle(state, action) {
     return { state }
 
   }
+  
+  if ( input.function === "unblock" ) {
+
+    if ( typeof actionOn !== "string" || actionOn.length !== 43 ) {
+      throw new ContractError(`${actionOn} is an invalid Arweave address`)
+    }
+
+    if ( ! decentlandState["balances"][caller] ) {
+      throw new ContractError(`You need to have a balance greater than zero of DLT token`)
+    }
+
+    if ( actionOn === caller ) {
+      throw new ContractError(`You can't perform this action on your own wallet address`)
+    }
+
+    if (! users[caller] ) {
+      throw new ContractError(`${caller} is unrecognized`)
+    }
+
+    if (! users[actionOn] ) {
+      throw new ContractError(`user not found`)
+    }
+
+    if (! users[caller]["block_list"].includes(actionOn) ) {
+      throw new ContractError(`${actionOn} is not blocked`)
+    }
+    // additional security check (it shouldn't evaluate to true)
+    if (users[caller]["followers"].includes(actionOn) || users[caller]["followings"].includes(actionOn) || 
+      users[actionOn]["followers"].includes(caller) || users[actionOn]["followings"].includes(caller) ) {
+      throw new ContractError(`something goes wrong`)
+    }
+    // remove actionOn from caller's block_list
+    const indexOfActionOn = users[caller]["block_list"].indexOf(actionOn)
+    users[caller]["block_list"].splice(indexOfActionOn, 1)
+
+    return { state }
+
+  }
 }
