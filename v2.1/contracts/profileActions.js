@@ -94,4 +94,60 @@ export async function handle(state, action) {
 
     return { state }
   }
+  
+  if ( input.function === "block" ) {
+
+    if ( typeof actionOn !== "string" || actionOn.length !== 43 ) {
+      throw new ContractError(`${actionOn} is an invalid Arweave address`)
+    }
+
+    if ( ! decentlandState["balances"][caller] ) {
+      throw new ContractError(`You need to have a balance greater than zero of DLT token`)
+    }
+
+    if ( actionOn === caller ) {
+      throw new ContractError(`You can't perform this action on your own wallet address`)
+    }
+
+    if (! users[caller] ) {
+      throw new ContractError(`${caller} is unrecognized`)
+    }
+
+    if (! users[actionOn] ) {
+      throw new ContractError(`user not found`)
+    }
+
+    if ( users[caller]["block_list"].includes(actionOn) ) {
+      throw new ContractError(`${actionOn} has been already blocked`)
+    }
+    // if it exist, remove the actionOn address from caller's followers array
+    if ( users[caller]["followers"].includes(actionOn) ) {
+      const indexOfBlocked = users[caller]["followers"].indexOf(actionOn)
+      users[caller]["followers"].splice(indexOfBlocked, 1)
+      // remove caller from actionOn's followings list
+      const indexOfCaller = users[actionOn]["followings"].indexOf(caller)
+      users[actionOn]["followings"].splice(indexOfCaller, 1)
+    }
+    // if it exist, remove the actionOn address from caller's followings array
+    if ( users[caller]["followings"].includes(actionOn) ) {
+      const indexOfBlocked = users[caller]["followings"].indexOf(actionOn)
+      users[caller]["followings"].splice(indexOfBlocked, 1)
+      // remove caller from actionOn's followers list
+      const indexOfCaller = users[actionOn]["followers"].indexOf(caller)
+      users[actionOn]["followers"].splice(indexOfCaller, 1) 
+    }
+    //  if exist, remove actionOn from caller's friendzone object
+    if ( users[caller]["friendzone"][actionOn] ) {
+      delete users[caller]["friendzone"][actionOn]
+    }
+    //  if exist, remove caller from actionOn's friendzone object
+    if ( users[actionOn]["friendzone"][caller] ) {
+      delete users[actionOn]["friendzone"][caller]
+    }
+    // append actionOn to caller's block_list
+    users[caller]["block_list"].push(actionOn)
+
+    return { state }
+
+  }
 }
