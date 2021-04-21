@@ -23,6 +23,13 @@ export async function handle(state, action) {
     if ( actionOn === caller ) {
       throw new ContractError(`You can't follow yourself`)
     }
+    if ( users[caller]["block_list"].includes(actionOn) ) {
+      throw new ContractError(`You have to unblock ${actionOn}`)
+    }
+
+    if ( users[actionOn]["block_list"].includes(caller) ) {
+      throw new ContractError(`You have been blocked by ${caller}`)
+    }
 
     if ( users[caller] ) {
       if ( (users[caller]["followings"]).includes(actionOn) ) {
