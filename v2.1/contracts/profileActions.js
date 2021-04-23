@@ -251,5 +251,41 @@ export async function handle(state, action) {
 
     return { state }
   }
+  
+  if ( input.function === "removeFromFriendzone" ) {
 
+    if ( typeof actionOn !== "string" || actionOn.length !== 43 ) {
+      throw new ContractError(`${actionOn} is an invalid Arweave address`)
+    }
+
+    if ( ! decentlandState["balances"][caller] ) {
+      throw new ContractError(`You need to have a balance greater than zero of DLT token`)
+    }
+
+    if ( actionOn === caller ) {
+      throw new ContractError(`You can't perform this action on your own wallet address`)
+    }
+
+    if (! users[caller] ) {
+      throw new ContractError(`${caller} is unrecognized`)
+    }
+
+    if (! users[actionOn] ) {
+      throw new ContractError(`user not found`)
+    }
+
+    if (! actionOn in users[caller]["friendzone"] ) {
+      throw new ContractError(`${actionOn} is not friendzoned`)
+    }
+    // override caller's status in actionOn's friendzone
+    // if it exist
+    if ( caller in users[actionOn]["friendzone"] ) {
+      users[actionOn]["friendzone"][caller] = false
+    }
+
+    delete users[caller]["friendzone"][actionOn]
+
+    return { state }
+  }
+  throw new ContractError(`unknown action: ${input.function}`)
 }
