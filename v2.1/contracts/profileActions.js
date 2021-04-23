@@ -206,4 +206,50 @@ export async function handle(state, action) {
     return { state }
 
   }
+  if ( input.function === "addToFriendzone" ) {
+
+    if ( typeof actionOn !== "string" || actionOn.length !== 43 ) {
+      throw new ContractError(`${actionOn} is an invalid Arweave address`)
+    }
+
+    if ( ! decentlandState["balances"][caller] ) {
+      throw new ContractError(`You need to have a balance greater than zero of DLT token`)
+    }
+
+    if ( actionOn === caller ) {
+      throw new ContractError(`You can't perform this action on your own wallet address`)
+    }
+
+    if (! users[caller] ) {
+      throw new ContractError(`${caller} is unrecognized`)
+    }
+
+    if (! users[actionOn] ) {
+      throw new ContractError(`user not found`)
+    }
+
+    if ( actionOn in users[caller]["friendzone"]) {
+      throw new ContractError(`You have already added ${actionOn}`)
+    }
+
+    if (! users[caller]["followings"].includes(actionOn) ) {
+      throw new ContractError(`You must follow ${actionOn} first to do this action`)
+    }
+
+    if ( users[actionOn]["block_list"].includes(caller) ) {
+      throw new ContractError(`you can't perform this action: ${actionOn} blocked you`)
+    }
+    // if caller has been already friendzoned by actionOn but not friendzoned-back
+    // by the caller ; friendzone actionOn by caller, and make them both active-friends
+    if ( caller in users[actionOn]["friendzone"] && users[actionOn]["friendzone"][caller] === false ) {
+      users[caller]["friendzone"][actionOn] = true
+      // actionOn and caller are active-friends
+      users[actionOn]["friendzone"][caller] = true
+    } else {
+      users[caller]["friendzone"][actionOn] = false
+    }
+
+    return { state }
+  }
+
 }
