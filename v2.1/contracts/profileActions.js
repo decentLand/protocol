@@ -30,8 +30,19 @@ export async function handle(state, action) {
     if ( users[actionOn]["block_list"].includes(caller) ) {
       throw new ContractError(`You have been blocked by ${caller}`)
     }
-
-    if ( users[caller] ) {
+    
+    // if the caller has been blocked by actionOn, throw err 
+   if ( caller in users ) {
+     if ( users[caller]["block_list"].includes(actionOn) ) {
+      throw new ContractError(`You have to unblock ${actionOn}`)
+    }
+    // if actionOn is blocked by caller, throw err
+    if ( users[actionOn]["block_list"].includes(caller) ) {
+      throw new ContractError(`You have been blocked by ${caller}`)
+    }
+   }
+    
+    if ( caller in users ) {
       if ( (users[caller]["followings"]).includes(actionOn) ) {
         throw new ContractError(`You already follow ${actionOn}`)
       } else {
@@ -144,11 +155,11 @@ export async function handle(state, action) {
       users[actionOn]["followers"].splice(indexOfCaller, 1) 
     }
     //  if exist, remove actionOn from caller's friendzone object
-    if ( users[caller]["friendzone"][actionOn] ) {
+    if ( actionOn in users[caller]["friendzone"] ) {
       delete users[caller]["friendzone"][actionOn]
     }
     //  if exist, remove caller from actionOn's friendzone object
-    if ( users[actionOn]["friendzone"][caller] ) {
+    if ( caller in users[actionOn]["friendzone"] ) {
       delete users[actionOn]["friendzone"][caller]
     }
     // append actionOn to caller's block_list
