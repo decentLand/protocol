@@ -24,6 +24,9 @@ const u_joinedAt = document.getElementById("joined");
 const u_posts = document.getElementById("posts_count");
 const u_balance = document.getElementById("balance");
 const u_postsObj = document.getElementById("posts");
+const u_followers = document.getElementById("followers");
+const u_followings = document.getElementById("followings");
+
 
 const monthList = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -267,7 +270,31 @@ body {
     }
 
 
+};
+// profile metrics are retrieved by reading
+// the last state of ./contracts/profileActions.json
+
+// a user's data will start to display only
+// after interacting with the SW contract
+async function getProfileMetrics(address) {
+    const data = await readState(arweave, "sTSWamZ22DNVQolWIc2L-Cfi88dC7YCE3dtXJwAa1kA")
+
+    if (! address in data) {
+        return {followers: 0, followings: 0}
+    }
+
+    const profileData = data["users"][address]
+    const followers = profileData["followers"].length
+    const followings = profileData["followings"].length
+
+    return {followers, followings}
 }
 
+async function pasreProfileMetrics(address) {
+    const data = await getProfileMetrics(address)
+    followers.innerHTML = data["followers"]
+    followings.innerHTML = data["followings"]
+}
 
+pasreProfileMetrics(userAddress)
 parseProfileData(userAddress)
