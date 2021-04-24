@@ -1,3 +1,17 @@
+// a smartweave contract that supports
+// on-profile actions: follow, unfollow
+// block, unblock, Friendzone.
+
+// REQUIREMENT:
+// the caller should be a DLT token holder
+// to invoke the contract's functions successfully
+
+// Author(s):
+// charmful0x
+
+
+// ----- DECENT.LAND -----
+
 const DECENTLAND_SWC = "sew_MAXZIgmyEPzzOTkdAca7SQCL9XTCMfxY3KOE5-M"
 
 export async function handle(state, action) {
@@ -21,14 +35,6 @@ export async function handle(state, action) {
     if ( actionOn === caller ) {
       throw new ContractError(`You can't follow yourself`)
     }
-    if ( users[caller]["block_list"].includes(actionOn) ) {
-      throw new ContractError(`You have to unblock ${actionOn}`)
-    }
-
-    if ( users[actionOn]["block_list"].includes(caller) ) {
-      throw new ContractError(`You have been blocked by ${caller}`)
-    }
-    
     // if the caller has been blocked by actionOn, throw err 
    if ( caller in users ) {
      if ( users[caller]["block_list"].includes(actionOn) ) {
@@ -39,7 +45,7 @@ export async function handle(state, action) {
       throw new ContractError(`You have been blocked by ${caller}`)
     }
    }
-    
+
     if ( caller in users ) {
       if ( (users[caller]["followings"]).includes(actionOn) ) {
         throw new ContractError(`You already follow ${actionOn}`)
@@ -80,7 +86,7 @@ export async function handle(state, action) {
 
   if ( input.function === "unfollow" ) {
 
-    if ( typeof input.actionOn !== "string" || actionOn.length !== 43 ) {
+    if ( typeof actionOn !== "string" || actionOn.length !== 43 ) {
       throw new ContractError(`${actionOn} is an invalid Arweave address`)
     }
 
@@ -110,7 +116,7 @@ export async function handle(state, action) {
 
     return { state }
   }
-  
+
   if ( input.function === "block" ) {
 
     if ( typeof actionOn !== "string" || actionOn.length !== 43 ) {
@@ -166,7 +172,7 @@ export async function handle(state, action) {
     return { state }
 
   }
-  
+
   if ( input.function === "unblock" ) {
 
     if ( typeof actionOn !== "string" || actionOn.length !== 43 ) {
@@ -204,6 +210,7 @@ export async function handle(state, action) {
     return { state }
 
   }
+
   if ( input.function === "addToFriendzone" ) {
 
     if ( typeof actionOn !== "string" || actionOn.length !== 43 ) {
@@ -235,7 +242,7 @@ export async function handle(state, action) {
     }
 
     if ( users[actionOn]["block_list"].includes(caller) ) {
-      throw new ContractError(`you can't perform this action: ${actionOn} blocked you`)
+      throw new ContractError(`you can't perform this action: ${actionOn} blocked`)
     }
     // if caller has been already friendzoned by actionOn but not friendzoned-back
     // by the caller ; friendzone actionOn by caller, and make them both active-friends
@@ -249,7 +256,7 @@ export async function handle(state, action) {
 
     return { state }
   }
-  
+
   if ( input.function === "removeFromFriendzone" ) {
 
     if ( typeof actionOn !== "string" || actionOn.length !== 43 ) {
@@ -285,5 +292,4 @@ export async function handle(state, action) {
 
     return { state }
   }
-  throw new ContractError(`unknown action: ${input.function}`)
 }
