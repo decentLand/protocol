@@ -1,7 +1,5 @@
 const DECENTLAND_SWC = "sew_MAXZIgmyEPzzOTkdAca7SQCL9XTCMfxY3KOE5-M"
 
-
-
 export async function handle(state, action) {
 
   const input = action.input
