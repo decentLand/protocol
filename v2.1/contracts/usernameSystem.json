@@ -1,0 +1,22 @@
+{
+	"users": {},
+	"balances": {
+		"ichi": {},
+		"ni": {},
+		"san": {},
+		"shi": {},
+		"go": {},
+		"roku": {},
+		"shichi": {}
+	},
+	"availableTokens": {
+		"ichi": 26,
+		"ni": 626,
+		"san": 17576,
+		"shi": 456976,
+		"go": 11881376,
+		"roku": 308915776,
+		"shichi": 8031810176  
+	},
+	"mintedTokens": []
+}
