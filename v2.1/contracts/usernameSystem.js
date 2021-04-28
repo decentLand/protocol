@@ -394,5 +394,98 @@ export async function handle(state, action){
 
         return { state }
     }
+    
+    if (input.function === "mint") {
+        const username = input.username
+        let token
+        let stage
+
+        if (caller.length !== 43 || typeof caller !== "string") {
+            throw new ContractError(`invalid arweave address`)
+        }
+
+        if (! decentlandState["balances"][caller]) {
+            throw new ContractError(`You need to have a balance greater than zero of DLT token`)
+        }
+
+        if (! caller in users) {
+            throw new ContractError(`you have to signup first`)
+        }
+
+        if (users[caller]["hasMinted"]) {
+            throw new ContractError(`You already minted an additional username: limit reached`)
+        }
+
+        if (mintedTokens.includes(username)) {
+            throw new ContractError(`${username} is acquired`)
+        }
+
+        if (username.length < 1  || username.length > 7 || typeof username !== "string") {
+            throw new ContractError(`invalid username`)
+        }
+        // only alphabetical characters are allowed
+        for (char of username) {
+            if (char.charCodeAt(0) < 97 || char.charCodeAt(0) > 122  ) {
+                throw new ContractError(`unsupported character supplied`)
+            }
+        }
+
+        if (blockHeight <= ALPHA) {
+            stage = [1, 2]
+        } else if ( blockHeight > ALPHA && blockHeight <= BETA) {
+            stage = [3]
+        } else if (blockHeight > BETA && blockHeight <= GAMMA) {
+            stage = [4]
+        } else {
+            stage = [5, 6, 7]
+        }
+
+        if (username.length < stage[0]) {
+            throw new ContractError(`the username length surpass the stage's limit`)
+        }
+
+        switch (username.length) {
+            case 1:
+                token = "ichi"
+                break
+            case 2:
+                token = "ni"
+                break
+            case 3:
+                token = "san"
+                break
+            case 4:
+                token = "shi"
+                break
+            case 5:
+                token = "go"
+                break
+            case 6:
+                token = "roku"
+                break
+            case 7:
+                token = "shichi"
+                break
+        }
+
+        if (availableTokens[token] === 0) {
+            throw new ContractError(`${token} is out of supply`)
+        }
+        // record the new username
+        users[caller]["tokens"][token]["usernames"].push(username)
+        // update the token's balance
+        users[caller]["tokens"][token]["balance"] = users[caller]["tokens"][token]["usernames"].length
+        // update the balances object
+        balances[token][caller] = users[caller]["tokens"][token]["usernames"].length
+        // remove token from availableTokens
+        availableTokens[token] -= 1
+        // minting additional username is only
+        // available for once per wallet
+        users[caller]["hasMinted"] = true
+        mintedTokens.push(username)
+
+        return { state }
+
+    }
 }
 
