@@ -13,12 +13,8 @@
 //Author(s):
 // charmful0x
 
-//TODO:
-// `mint` function which allows the user
-// to mint only a single additional username
-// after registration.
-
-
+// NOTE: THIS CONTRACT STILL NOT IMPLEMENTED
+// OFFICIALLY. NO PRE-MINTING
 const DECENTLAND_SWC = "sew_MAXZIgmyEPzzOTkdAca7SQCL9XTCMfxY3KOE5-M"
 
 export async function handle(state, action){
@@ -257,10 +253,6 @@ export async function handle(state, action){
             throw new ContractError(`unregistered user`)
         }
 
-        if (! token in availableTokens) {
-            throw new ContractError(`invalid token type`)
-        }
-
         if (! decentlandState["balances"][caller]) {
             throw new ContractError(`You need to have a balance greater than zero of DLT token`)
         }
@@ -292,6 +284,10 @@ export async function handle(state, action){
                 token = "shichi"
                 break
         }
+        
+        if (! token in availableTokens) {
+            throw new ContractError(`invalid token type`)
+        }
 
         if (users[caller]["currentUsername"] === username) {
             throw new ContractError(`You can't transfer your current username, you have to switch it`)
@@ -320,7 +316,7 @@ export async function handle(state, action){
             // update `to` balance and state
             users[to]["tokens"][token]["usernames"].push(username)
             // update `to` balance dynamically
-            users[to]["tokens"][token]["balances"] = users[to]["tokens"][token]["usernames"].length
+            users[to]["tokens"][token]["balance"] = users[to]["tokens"][token]["usernames"].length
             // update balances object
             balances[token][to] = users[to]["tokens"][token]["usernames"].length
 
@@ -329,7 +325,7 @@ export async function handle(state, action){
             // remove the username from `usernames` array
             users[caller]["tokens"][token]["usernames"].splice(indexOfUsername, 1)
             // update caller `balance` of usernames dyncamically
-            users[caller]["tokens"][token]["balances"] = users[caller]["tokens"][token]["usernames"].length
+            users[caller]["tokens"][token]["balance"] = users[caller]["tokens"][token]["usernames"].length
             // update `balances` object
             balances[token][caller] = users[caller]["tokens"][token]["usernames"].length
 
@@ -478,6 +474,13 @@ export async function handle(state, action){
         if (availableTokens[token] === 0) {
             throw new ContractError(`${token} is out of supply`)
         }
+        
+        if (! users[caller]["tokens"][token]) {
+            users[caller]["tokens"][token] = {
+                "usernames": [],
+                "balance": 0
+            }
+        }
         // record the new username
         users[caller]["tokens"][token]["usernames"].push(username)
         // update the token's balance
@@ -494,5 +497,6 @@ export async function handle(state, action){
         return { state }
 
     }
+    throw new ContractError(`unknown function supplied: ${input.function}`)
 }
 
