@@ -257,7 +257,7 @@ export async function handle(state, action){
             throw new ContractError(`unregistered user`)
         }
 
-        if (! Object.keys(availableTokens).includes(token)) {
+        if (! token in availableTokens) {
             throw new ContractError(`invalid token type`)
         }
 
@@ -310,6 +310,13 @@ export async function handle(state, action){
         }
 
         if (to in users) {
+            
+           if (! users[to]["tokens"][token]) {
+                users[to]["tokens"][token] = {
+                    "usernames": [],
+                    "balance": 0
+                }
+            }
             // update `to` balance and state
             users[to]["tokens"][token]["usernames"].push(username)
             // update `to` balance dynamically
