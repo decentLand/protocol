@@ -13,6 +13,10 @@
 // ----- DECENT.LAND -----
 
 const DECENTLAND_SWC = "sew_MAXZIgmyEPzzOTkdAca7SQCL9XTCMfxY3KOE5-M"
+// usernameSystem is the contract that hold user's registration state
+// the SW contract address below is only used for testnet and to
+// the functionality of this contract.
+const USERNAMES_SWC = "RUsVtU-kywFWf63XivMPPM2o3hmP7xRQYdlwEk52paA"
 
 export async function handle(state, action) {
 
@@ -21,11 +25,20 @@ export async function handle(state, action) {
   const users = state.users
   const actionOn = input.actionOn
   const decentlandState = await SmartWeave.contracts.readContractState(DECENTLAND_SWC)
+  const usernameSystem = await SmartWeave.contracts.readContractState(USERNAMES_SWC)
 
   if (input.function === "follow") {
 
     if ( typeof actionOn !== "string" || actionOn.length !== 43 ) {
       throw new ContractError(`${actionOn} is an invalid Arweave address`)
+    }
+    
+    if (! caller in usernameSystem["users"]) {
+      throw new ContractError(`You have to signup first`)
+    }
+
+    if ( ! actionOn in usernameSystem["users"]) {
+      throw new ContractError(`${actionOn} is an unrecognized user`)
     }
 
     if ( ! decentlandState["balances"][caller] ) {
@@ -96,6 +109,10 @@ export async function handle(state, action) {
 
     if ( actionOn === caller ) {
       throw new ContractError(`You can't perform this action on your own wallet address`)
+    }
+    
+    if (! users[caller] ) {
+      throw new ContractError(`${caller} is unrecognized`)
     }
 
     if ( !users[actionOn] ) {
@@ -292,4 +309,5 @@ export async function handle(state, action) {
 
     return { state }
   }
+  throw new ContractError(`unknown function supplied: ${input.function}`)
 }
