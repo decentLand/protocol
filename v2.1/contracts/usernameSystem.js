@@ -40,6 +40,7 @@ export async function handle(state, action){
 
         const username = input.username
         const bio = input.bio
+        const friendzonePercentage = input.friendzonePercentage
         let pfp = input.pfp
         const tagsMap = new Map()
         let stage;
@@ -65,6 +66,15 @@ export async function handle(state, action){
         if (username.length === 0 || typeof username !== "string") {
             throw new ContractError(`invalid username`)
         }
+        
+        if ( !Number.isInteger(friendzonePercentage)) {
+            throw new ContractError(`only integer values allowed`)
+        }
+
+        if (friendzonePercentage < 10 || friendzonePercentage > 90) {
+            throw new ContractError(`friendzonePercentage should be between 10 and 90`)
+        }
+        
         // only alphabetical characters are allowed
         for (char of username) {
             if (char.charCodeAt(0) < 97 || char.charCodeAt(0) > 122  ) {
@@ -158,6 +168,7 @@ export async function handle(state, action){
         mintedTokens.push(username)
         // assign user's metadata
         users[caller]["currentUsername"] = username
+        users[caller]["friendzonePercentage"] = friendzonePercentage
         users[caller]["bio"] = bio
         users[caller]["pfp"] = pfp
         users[caller]["joinedAt"] = Date.now()
@@ -238,6 +249,36 @@ export async function handle(state, action){
 
         return { state }
 
+    }
+    
+    if (input.function === "updateFriendzonePercentage") {
+        const newPercentage = input.newPercentage
+        if (caller.length !== 43 || typeof caller !== "string") {
+            throw new ContractError(`invalid Arweave wallet`)
+        }
+        
+        if (! decentlandState["balances"][caller]) {
+            throw new ContractError(`You need to have a balance greater than zero of DLT token`)
+        }
+
+        if (! caller in users) {
+            throw new ContractError(`You need to register first`)
+        }
+
+        if (! Number.isInteger(newPercentage)) {
+            throw new ContractError(`friendzonePercentage should be an integer value`)
+        }
+
+        if (newPercentage === users[caller]["friendzonePercentage"]) {
+            throw new ContractError(`new value should be different than the old one`)
+        }
+
+        if (newPercentage < 10 || newPercentage > 90) {
+            throw new ContractError(`friendzonePercentage value should be between 10 and 90 %`)
+        }
+
+        users[caller]["friendzonePercentage"] = newPercentage
+        return { state }
     }
 
     if (input.function === "transfer") {
