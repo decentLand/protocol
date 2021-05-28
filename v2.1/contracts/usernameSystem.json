@@ -18,5 +18,6 @@
 		"roku": 308915776,
 		"shichi": 8031810176  
 	},
-	"mintedTokens": []
+	"mintedTokens": [],
+	"blacklistIDs": []
 }
