@@ -538,6 +538,74 @@ export async function handle(state, action){
         return { state }
 
     }
+    
+    if (input.function === "blacklist") {
+        const user = input.user
+        const voteID = input.vote
+        const days = input.days
+        const votes = decentlandState["votes"]
+
+        if (typeof user !== "string" || user.length !== 43) {
+            throw new ContractError(`invalid Arweave address`)
+        }
+
+        if (!users[user]) {
+            throw new ContractError(`${user} not found`)
+        }
+
+        if (! users[caller]) {
+            throw new ContractError(`You must register in decent.land protocol`)
+        }
+
+        if (! decentlandState["balances"][caller]) {
+            throw new ContractError(`You need to have a balance greater than zero of DLT token`)
+        }
+
+        if (votes.length < voteID) {
+            throw new ContractError(`invalid vote ID`)
+        }
+
+
+        if (! Number.isInteger(voteID)) {
+            throw new ContractError(`invalid ID type`)
+        }
+
+        if (! Number.isInteger(days)) {
+            throw new ContractError(`days must be integer`)
+        }
+
+        // min and max user's blacklisting is equal to min and
+        // max DLT locking length, hence user's blacklisting is
+        // similar to token's staking
+        if ( (days * 720) < decentlandState["settings"][3][1]) {
+            throw new ContractError(`blacklisting length too low`)
+        }
+
+        if ( (days * 720) > decentlandState["settings"][4][1]) {
+            throw new ContractError(`blacklisting length too high`)
+        }
+
+        if (blacklist.includes(voteID)) {
+            throw new ContractError(`vote having ID ${voteID} has been already executed`)
+        }
+
+        const vote = votes[voteID]
+
+
+        if (vote["status"] === "passed" && vote["type"] === "indicative" && vote["note"].startsWith("decentlandBlacklist:")) {
+            const voteContent = vote["note"].split(":")[1]
+
+            if (voteContent === user && users[user]) {
+                users[user]["blacklistUntilBlockHeight"] = blockHeight + (720 * days)
+                blacklist.push(voteID)
+                
+                return { state }
+            }
+        }
+
+        throw new ContractError(`Error occured`)
+
+    }
     throw new ContractError(`unknown function supplied: ${input.function}`)
 }
 
