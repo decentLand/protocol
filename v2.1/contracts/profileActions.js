@@ -12,6 +12,7 @@
 
 // ----- DECENT.LAND -----
 
+// testnet DecentLand PSC address OA2AH-uyk6IakJDTQhgUaAf5PWaSGJgWz178C1aYDL4
 const DECENTLAND_SWC = "sew_MAXZIgmyEPzzOTkdAca7SQCL9XTCMfxY3KOE5-M"
 // usernameSystem is the contract that hold user's registration state
 // the SW contract address below is only used for testnet and to
