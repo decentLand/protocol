@@ -1,7 +1,4 @@
-// TODO
-//  1- test "delete" function which deletes a single post by ID,
-// according on the DAO's vote result
-// 2- create "timedBan" which "ban" a user for x network blocks 
+
 
 
 const USERS_SWC = "RUsVtU-kywFWf63XivMPPM2o3hmP7xRQYdlwEk52paA"
@@ -26,6 +23,13 @@ export async function handle(state, action) {
 
         if (! caller in usersState["users"]) {
             throw new ContractError("You have to signup first")
+        }
+        
+        
+        if (usersState["users"][caller]["blacklistUntilBlockHeight"]) {
+            if (usersState["users"][caller]["blacklistUntilBlockHeight"] >= blockHeight) {
+                throw new ContractError(`You have been blacklisted for ${blockHeight} network's blockHeight`)
+            }
         }
 
         if (! tribus in tribusState["tribuses"]) {
@@ -96,6 +100,12 @@ export async function handle(state, action) {
 
         if (! caller in usersState["users"]) {
             throw new ContractError("You have to signup first")
+        }
+        
+        if (usersState["users"][caller]["blacklistUntilBlockHeight"]) {
+            if (usersState["users"][caller]["blacklistUntilBlockHeight"] >= blockHeight) {
+                throw new ContractError(`You have been blacklisted for ${blockHeight} network's blockHeight`)
+            }
         }
 
         if (! tribus in tribusState["tribuses"]) {
