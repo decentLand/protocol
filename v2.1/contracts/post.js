@@ -1,8 +1,20 @@
+// -- SW contract for Tribus posts --
+// This contract handle the posts of DAO Tribuses - not
+// for the PublicSquare Tribus. The blacklisted users via
+// community voting are temporary banned from posting in any Tribus.
+
+// Author(s):
+// charmful0x
+
+//REQUIREMENTS TO POST:
+// 1- meet the Tribus entry conditions (membership and entry)
+// 2- being a DLT holder
+// 3- having the caller wallet recorded in USERS_SWC
+// 4- not being blacklisted (by blockheight) through community voting
 
 
-
-const USERS_SWC = "RUsVtU-kywFWf63XivMPPM2o3hmP7xRQYdlwEk52paA"
-const TRIBUS_SWC = "fRyRiV40kTqz62IGDoK76MmELzB-gV9zcadN7V6fBGM"
+const USERS_SWC = "x0UlfULWsYGNttZf4QTIEuIvedjsYQtaHh_yOfyhOWg"
+const TRIBUS_SWC = "r8qRzQF0lS5PDYtm5wTZVeC1cK0Z7whwLFc333ejQPY"
 const DECENTLAND_SWC = "sew_MAXZIgmyEPzzOTkdAca7SQCL9XTCMfxY3KOE5-M"
 
 export async function handle(state, action) {
