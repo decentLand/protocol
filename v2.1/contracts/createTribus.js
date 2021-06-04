@@ -109,12 +109,15 @@ export async function handle(state, action) {
         if (tagsMap.get("Content-Type") !== "application/json") {
             throw new ContractError(`invalid cXYZ PSC`)
         }
-
+        
+        const creationTX = SmartWeave.transaction.id
+        
         tribuses[tribusID] = {
             "tribusName": tribusName,
             "membership": membership,
             "visibility": visibility,
-            "description": description
+            "description": description,
+            "tribusLogs": [creationTX]
         }
 
         return { state }
@@ -175,11 +178,15 @@ export async function handle(state, action) {
         if (caller !== pscTxOwnerToBase64) {
             throw new ContractError(`only ${tribusID} owner can update it`)
         }
-
+        
+        const updateTX = SmartWeave.transaction.id
+        // tribusID is constant value
         tribuses[tribusID]["tribusName"] = tribusName
         tribuses[tribusID]["membership"] = membership
         tribuses[tribusID]["visibility"] = visibility
         tribuses[tribusID]["description"] = description
+        tribuses[tribusID]["tribusLogs"].push(updateTX)
+        
 
         return { state }
     }
