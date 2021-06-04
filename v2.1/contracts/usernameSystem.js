@@ -151,6 +151,8 @@ export async function handle(state, action){
         if (availableTokens[token] === 0) {
             throw new ContractError(`${token} is out of supply, you can check for token trading`)
         }
+        
+        const signupTX = SmartWeave.transaction.id
         // initilize the caller's object
         users[caller] = {
             "tokens": {}
@@ -172,6 +174,7 @@ export async function handle(state, action){
         users[caller]["bio"] = bio
         users[caller]["pfp"] = pfp
         users[caller]["joinedAt"] = Date.now()
+        users[caller]["accountLogs"] = [signupTX]
 
 
         return { state }
@@ -200,9 +203,11 @@ export async function handle(state, action){
         if (users[caller]["bio"] === newBio) {
             throw new ContractError(`old bio and new bio are the same`)
         }
-
+        const updateTX = SmartWeave.transaction.id
+        
         users[caller]["bio"] = newBio
         users[caller]["lastUpdate"] = Date.now()
+        users[caller]["accountLogs"].push(updateTX)
 
         return { state }
     }
@@ -243,9 +248,11 @@ export async function handle(state, action){
         if (! tagsMap.get("Content-Type").startsWith("image/")) {
             throw new ContractError(`the data TX should be media MIME`)
         }
-
+        const updateTX = SmartWeave.transaction.id
+        
         users[caller]["pfp"] = newPfp
         users[caller]["lastUpdate"] = Date.now()
+        users[caller]["accountLogs"].push(updateTX)
 
         return { state }
 
@@ -276,8 +283,11 @@ export async function handle(state, action){
         if (newPercentage < 10 || newPercentage > 90) {
             throw new ContractError(`friendzonePercentage value should be between 10 and 90 %`)
         }
-
+        const updateTX = SmartWeave.transaction.id
+        
         users[caller]["friendzonePercentage"] = newPercentage
+        users[caller]["accountLogs"].push(updateTX)
+        
         return { state }
     }
 
