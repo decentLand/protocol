@@ -30,7 +30,7 @@ export async function handle(state, action){
 
     // stages levels:
     // stage ALPHA ends on ~ May 25 2021
-    const ALPHA = 694794
+    const ALPHA = 714794
     // stage BETA ends on ~ Aug 25 2021
     const BETA = 737994
     // stage GAMMA ends on ~ Dec 25 2021
@@ -539,7 +539,7 @@ export async function handle(state, action){
 
     }
     
-    if (input.function === "blacklist") {
+    if (input.function === "blacklistUserFromPosting") {
         const user = input.user
         const voteID = input.vote
         const days = input.days
