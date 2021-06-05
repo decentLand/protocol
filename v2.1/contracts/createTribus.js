@@ -8,6 +8,10 @@
 const DECENTLAND_SWC = "sew_MAXZIgmyEPzzOTkdAca7SQCL9XTCMfxY3KOE5-M"
 const USERNAMES_SWC = "RUsVtU-kywFWf63XivMPPM2o3hmP7xRQYdlwEk52paA"
 
+//testnet addresses
+//const DECENTLAND_SWC = "OA2AH-uyk6IakJDTQhgUaAf5PWaSGJgWz178C1aYDL4"
+//const USERNAMES_SWC = "Pt9DTwf3aZcxooq7Eq7XlkVRiIQDt3JJS1LV9UwoxDE"
+
 export async function handle(state, action) {
 
     const input = action.input
@@ -17,7 +21,7 @@ export async function handle(state, action) {
     const usernameSystem = await SmartWeave.contracts.readContractState(USERNAMES_SWC)
 
 
-    if (input.function === "create") {
+    if (input.function === "createTribus") {
         const tribusName = input.name
         const tribusID = input.id
         const membership = input.membership
@@ -124,7 +128,7 @@ export async function handle(state, action) {
 
     }
 
-    if (input.function === "update") {
+    if (input.function === "updateTribus") {
 
         const tribusName = input.name
         const tribusID = input.id
@@ -190,6 +194,6 @@ export async function handle(state, action) {
 
         return { state }
     }
+    
     throw new ContractError(`unknown function supplied: ${input.function}`)
-
 }
