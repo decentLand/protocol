@@ -173,7 +173,7 @@ export async function handle(state, action){
         users[caller]["friendzonePercentage"] = friendzonePercentage
         users[caller]["bio"] = bio
         users[caller]["pfp"] = pfp
-        users[caller]["joinedAt"] = Date.now()
+        users[caller]["joinedAt"] = blockHeight
         users[caller]["accountLogs"] = [signupTX]
 
 
@@ -206,7 +206,7 @@ export async function handle(state, action){
         const updateTX = SmartWeave.transaction.id
         
         users[caller]["bio"] = newBio
-        users[caller]["lastUpdate"] = Date.now()
+        users[caller]["lastUpdate"] = blockHeight
         users[caller]["accountLogs"].push(updateTX)
 
         return { state }
@@ -251,7 +251,7 @@ export async function handle(state, action){
         const updateTX = SmartWeave.transaction.id
         
         users[caller]["pfp"] = newPfp
-        users[caller]["lastUpdate"] = Date.now()
+        users[caller]["lastUpdate"] = blockHeight
         users[caller]["accountLogs"].push(updateTX)
 
         return { state }
@@ -444,7 +444,7 @@ export async function handle(state, action){
         }
         // update the currentUsername (displaying username)
         users[caller]["currentUsername"] = username
-        users[caller]["lastUpdate"] = Date.now()
+        users[caller]["lastUpdate"] = blockHeight
 
         return { state }
     }
